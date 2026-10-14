@@ -300,8 +300,7 @@
 }
 
 .citation-dialog[open] {
-  display: flex;
-  flex-direction: column;
+  display: block;
 }
 
 .citation-dialog::backdrop {
@@ -313,8 +312,8 @@
 .citation-dialog-shell {
   display: flex;
   min-height: 0;
-  max-height: inherit;
-  flex: 1;
+  max-height: calc(100vh - 2rem);
+  max-height: calc(100dvh - 2rem);
   flex-direction: column;
   overflow: hidden;
   background:
