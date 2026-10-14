@@ -1,0 +1,73 @@
+---
+import type { Publication } from "../lib/content";
+
+interface Props {
+  publication: Publication;
+  menteeLed: boolean;
+  collaboration: boolean;
+}
+
+const { publication, menteeLed, collaboration } = Astro.props;
+const d = publication.data;
+---
+
+{
+  d.status === "in-preparation" && (
+    <span
+      class="rounded-full border border-violet-800 bg-violet-950/60 px-2 py-0.5 font-medium text-violet-200"
+      data-publication-badge="in-preparation"
+    >
+      In preparation
+    </span>
+  )
+}
+{
+  typeof d.citations === "number" && (
+    <span
+      class="rounded-full border border-amber-800 bg-amber-950/60 px-2 py-0.5 font-medium text-amber-200"
+      data-publication-badge="citations"
+    >
+      Cited by {d.citations}
+    </span>
+  )
+}
+{
+  menteeLed && (
+    <span
+      class="rounded-full border border-line bg-surface-muted px-2 py-0.5 font-medium text-ink"
+      data-publication-badge="member-led"
+    >
+      Member-led
+    </span>
+  )
+}
+{
+  d.piCorresponding && (
+    <span
+      class="rounded-full border border-primary-800 bg-primary-950 px-2 py-0.5 font-medium text-primary-200"
+      data-publication-badge="pi-corresponding"
+    >
+      PI corresponding author
+    </span>
+  )
+}
+{
+  collaboration && (
+    <span
+      class="rounded-full border border-line bg-elevated px-2 py-0.5 font-medium text-muted"
+      data-publication-badge="collaboration"
+    >
+      Collaboration
+    </span>
+  )
+}
+{
+  d.openAccess && (
+    <span
+      class="rounded-full border border-emerald-800 bg-emerald-950/60 px-2 py-0.5 font-medium text-emerald-200"
+      data-publication-badge="open-access"
+    >
+      Open access
+    </span>
+  )
+}

@@ -1,0 +1,769 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Three-dimensional gravity forward modeller using an analytical rectangular-prism kernel">
+  <title>3D Gravity Forward Modeller</title>
+  <base target="_blank">
+  <style>
+:root{--bg:#071019;--panel:#0d1823;--panel2:#111f2c;--line:#243746;--line2:#3c5668;--text:#edf4f7;--muted:#91a5b2;--cyan:#49d9cf;--cyan2:#153c40;--yellow:#ffd166;--red:#ff765b;--shadow:0 18px 46px rgba(0,0,0,.22)}
+*{box-sizing:border-box}html,body{min-height:100%}body{margin:0;background:radial-gradient(circle at 75% -10%,rgba(36,106,111,.24),transparent 34rem),linear-gradient(#071019,#09131d);color:var(--text);font-family:Inter,Pretendard,"Noto Sans KR",system-ui,-apple-system,sans-serif;line-height:1.5}.app{max-width:1640px;margin:auto;padding:18px 22px 34px}.topbar{min-height:66px;display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:14px}.brand{display:flex;align-items:center;gap:13px}.brand-mark{width:42px;height:42px;display:grid;place-items:center;border:1px solid #315366;border-radius:12px;background:#10202b;color:var(--cyan)}.brand-mark svg{width:28px}h1{font-size:clamp(18px,2vw,25px);letter-spacing:-.025em;margin:0}.brand p{font-size:12px;color:var(--muted);margin:1px 0 0}.badges{display:flex;gap:7px}.badges span{font:10px ui-monospace,monospace;color:#b6c7cf;border:1px solid var(--line2);border-radius:99px;padding:5px 8px;background:#0b1620}.panel{background:rgba(13,24,35,.95);border:1px solid var(--line);border-radius:15px;box-shadow:var(--shadow);overflow:hidden}.section-head{min-height:49px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:14px;border-bottom:1px solid var(--line);font-size:13px;font-weight:700}.section-head b{font:700 12px ui-monospace,monospace;color:var(--cyan);margin-right:7px}.section-head small{font-size:10px;font-weight:400;color:var(--muted);text-align:right}.coordinate-panel{margin-bottom:14px}.coordinate-grid{display:grid;grid-template-columns:1.35fr repeat(7,1fr);gap:0}.coordinate-grid label{padding:11px 12px 13px;border-right:1px solid var(--line);font-size:10px;color:var(--muted)}.coordinate-grid label:last-child{border-right:0}input,select,button{font:inherit}input[type=number],input[type=text],.coordinate-grid input,.coordinate-grid select,select{width:100%;margin-top:5px;border:1px solid var(--line2);border-radius:7px;background:#09151f;color:var(--text);padding:7px 8px;outline:none}.coordinate-grid input:focus,.coordinate-grid select:focus,select:focus{border-color:var(--cyan);box-shadow:0 0 0 2px rgba(73,217,207,.1)}.workspace{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(420px,.88fr);gap:14px}.canvas-wrap{position:relative;background:#08121b}.model-wrap{height:min(58vh,610px);min-height:440px}.field-wrap{height:390px;min-height:330px}canvas{display:block;width:100%;height:100%}#modelCanvas{cursor:grab;touch-action:none}#modelCanvas.dragging{cursor:grabbing}.overlay,.compute-status{position:absolute;background:rgba(5,13,20,.76);border:1px solid #2a4050;border-radius:7px;color:#aec0c9;font:10px ui-monospace,monospace;padding:5px 8px}.top-right{right:12px;top:12px}.bottom-left{left:12px;bottom:11px}.bottom-left i,.compute-status i{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--cyan);margin-right:5px;box-shadow:0 0 9px rgba(73,217,207,.65)}.compute-status{right:12px;top:11px}.compute-status i.busy{animation:pulse .7s infinite alternate}@keyframes pulse{to{opacity:.25;transform:scale(.72)}}.legend{height:39px;padding:9px 15px;display:flex;align-items:center;gap:8px;border-top:1px solid var(--line);color:var(--muted);font:10px ui-monospace,monospace}.legend-bar{height:8px;flex:1;border-radius:20px;background:linear-gradient(90deg,#173a86,#217bc0,#4ad3ce,#f1e65f,#ef7136,#8c1733)}.metrics{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line)}.metrics>div{padding:11px 13px;border-right:1px solid var(--line)}.metrics>div:last-child{border-right:0}.metrics small{display:block;color:var(--muted);font-size:10px;margin-bottom:2px}.metrics strong{font:650 14px ui-monospace,monospace}.controls{margin-top:14px}.control-grid{display:grid;grid-template-columns:1.15fr .95fr .8fr .8fr 1.1fr 1.2fr}.control-block{padding:12px 14px;border-right:1px solid var(--line)}.control-block:last-child{border-right:0}.control-title{display:flex;justify-content:space-between;gap:8px;align-items:baseline;color:#cbd7dc;font-size:11px;margin-bottom:8px}.control-title output{color:var(--cyan);font:650 11px ui-monospace,monospace}.control-block select{margin:0}.control-block input[type=range]{width:100%;accent-color:var(--cyan)}.split-buttons,.preset-buttons{display:flex;gap:6px}.split-buttons button,.preset-buttons button,.action-row button,.topo-load{border:1px solid var(--line2);border-radius:8px;background:#0a1620;color:#b9c9d1;padding:7px 9px;cursor:pointer;transition:.15s}.split-buttons button{flex:1}.preset-buttons button{flex:1;font-size:11px}.preset-buttons button.active{color:var(--cyan);border-color:#387c79;background:var(--cyan2)}button:hover{border-color:#658297!important;transform:translateY(-1px)}.topo-load{width:100%;font-size:10px}.toggle-label{display:flex;gap:6px;align-items:center}.toggle-label input{accent-color:var(--cyan)}.action-row{padding:10px 14px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:7px}.action-row .primary{background:var(--cyan);color:#061114;border-color:var(--cyan);font-weight:700}.diagnostics{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:14px}.diagnostic-card{padding:13px 15px}.diagnostic-card span{display:block;color:var(--muted);font-size:10px}.diagnostic-card strong{display:block;color:#e5f0f3;font:650 18px ui-monospace,monospace;margin:3px 0}.diagnostic-card small{color:#728995;font-size:9px}.notes{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}.notes article{padding:14px 16px}.notes h2{font-size:12px;margin:0 0 5px}.notes p{font-size:11px;color:#9fb1bb;margin:0}footer{text-align:center;color:#617784;font-size:10px;padding:18px 0 0}@media(max-width:1200px){.coordinate-grid{grid-template-columns:repeat(4,1fr)}.coordinate-grid label{border-bottom:1px solid var(--line)}.workspace{grid-template-columns:1fr}.model-wrap{height:52vh}.control-grid{grid-template-columns:repeat(3,1fr)}.control-block:nth-child(3){border-right:0}.control-block:nth-child(-n+3){border-bottom:1px solid var(--line)}}@media(max-width:700px){.app{padding:12px}.badges,.brand p{display:none}.coordinate-grid{grid-template-columns:1fr 1fr}.coordinate-grid label:nth-child(even){border-right:0}.model-wrap{min-height:380px}.field-wrap{height:330px}.control-grid{grid-template-columns:1fr}.control-block{border-right:0;border-bottom:1px solid var(--line)}.diagnostics,.notes{grid-template-columns:1fr 1fr}.action-row{flex-wrap:wrap}.action-row button{flex:1;min-width:135px}}
+.coupled-workspace{margin-bottom:14px}.coupled-views{display:grid;grid-template-columns:minmax(0,1.06fr) minmax(0,.94fr);background:#08121b}.view-pane{min-width:0}.field-pane{border-left:1px solid var(--line)}.view-title{height:38px;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px;border-bottom:1px solid var(--line);background:#0a1720}.view-title strong{font-size:11px;color:#dbe8ec}.view-title span{font-size:8px;color:var(--muted);text-align:right}.live-title strong{color:var(--cyan)}.live-title strong:before{content:"";display:inline-block;width:7px;height:7px;margin-right:6px;border-radius:50%;background:var(--cyan);box-shadow:0 0 9px rgba(73,217,207,.65)}.coupled-workspace .model-wrap,.coupled-workspace .field-wrap{height:clamp(360px,37vw,510px);min-height:360px}.field-pane .metrics strong{font-size:12px}.field-pane .metrics>div{padding:9px 10px}.controls{margin-top:0}@media(max-width:660px){.coupled-views{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.coupled-workspace .model-wrap,.coupled-workspace .field-wrap{height:330px;min-height:330px}.view-title{padding:7px 8px}.view-title span,.overlay{display:none}.field-pane .legend{padding:8px}.field-pane .metrics>div{padding:7px 5px}.field-pane .metrics small{font-size:8px}.field-pane .metrics strong{font-size:10px}}@media(max-width:430px){.coupled-workspace .model-wrap,.coupled-workspace .field-wrap{height:290px;min-height:290px}.view-title strong{font-size:9px}.compute-status{right:5px;top:5px;font-size:8px;padding:3px 5px}}
+
+.sculpt-toolbar{display:grid;grid-template-columns:minmax(360px,1.5fr) minmax(180px,.7fr) minmax(180px,.7fr);align-items:center;gap:12px;padding:9px 12px;border-bottom:1px solid var(--line);background:#0a1620}.tool-buttons{display:flex;gap:5px}.tool-buttons button{flex:1;border:1px solid var(--line2);border-radius:7px;background:#09141d;color:#9fb2bc;padding:6px 7px;cursor:pointer;font-size:10px}.tool-buttons button.active{color:#061114;background:var(--cyan);border-color:var(--cyan);font-weight:700}.sculpt-toolbar label{display:grid;grid-template-columns:auto auto;gap:0 8px;color:#9fb1bb;font-size:9px}.sculpt-toolbar output{color:var(--cyan);text-align:right;font:600 10px ui-monospace,monospace}.sculpt-toolbar input{grid-column:1/-1;width:100%;accent-color:var(--cyan)}.dimension-tools{display:flex;gap:10px;margin-right:auto;min-width:390px}.dimension-tools label{display:grid;grid-template-columns:auto auto;gap:0 6px;flex:1;color:#8fa4af;font-size:9px}.dimension-tools output{color:var(--cyan);text-align:right;font:600 9px ui-monospace,monospace}.dimension-tools input{grid-column:1/-1;width:100%;accent-color:var(--cyan)}#rebuildVoxels.dirty{background:var(--yellow);border-color:var(--yellow);color:#171305;box-shadow:0 0 18px rgba(255,209,102,.18)}@media(max-width:1100px){.sculpt-toolbar{grid-template-columns:1fr 1fr}.tool-buttons{grid-column:1/-1}.action-row{flex-wrap:wrap}.dimension-tools{order:2;width:100%;min-width:0}}@media(max-width:650px){.sculpt-toolbar{grid-template-columns:1fr}.tool-buttons{display:grid;grid-template-columns:repeat(3,1fr)}.dimension-tools{display:grid;grid-template-columns:1fr}.action-row button{min-width:120px}}
+.topology-toolbar{display:flex;align-items:center;gap:6px;padding:7px 12px;border-bottom:1px solid var(--line);background:#08131c}.topology-toolbar output{margin-right:auto;color:#78ddd5;font:600 10px ui-monospace,monospace;min-width:145px}.topology-toolbar button{border:1px solid var(--line2);border-radius:7px;background:#0a1720;color:#aabcc5;padding:6px 9px;cursor:pointer;font-size:9px}.topology-toolbar button:hover:not(:disabled){border-color:#5acfc5;color:#d9fffb}.topology-toolbar button:disabled{opacity:.35;cursor:not-allowed}.topology-toolbar #deleteVertex,.topology-toolbar #deleteRing{border-color:rgba(242,126,96,.42)}.topology-toolbar kbd{margin-left:4px;padding:1px 4px;border:1px solid #38505d;border-radius:4px;background:#071018;color:#8da2ad;font:8px ui-monospace,monospace;white-space:nowrap}
+@media(max-width:1100px){.topology-toolbar{flex-wrap:wrap}.topology-toolbar output{width:100%;flex-basis:100%}}
+@media(max-width:650px){.topology-toolbar button{flex:1 1 calc(50% - 6px)}.topology-toolbar kbd{display:none}}
+
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 34 34" fill="none"><path d="m4 10 13-6 13 6-13 6-13-6Z" stroke="currentColor"/><path d="m4 17 13 6 13-6M4 23l13 7 13-7" stroke="currentColor" opacity=".58"/></svg>
+        </div>
+        <div><h1>3D Gravity Forward Modeller</h1><p>Georeferenced density-body editing · analytical vertical-prism kernel · convergence check</p></div>
+      </div>
+      <div class="badges"><span>Nagy-type prism kernel</span><span>Offline computation</span></div>
+    </header>
+
+    <section class="panel coordinate-panel" aria-label="Coordinate and observation-grid settings">
+      <div class="section-head"><div><b>01</b> Coordinates and reference surface</div><small>Horizontal distances are in km; depth is positive downward from the surface</small></div>
+      <div class="coordinate-grid">
+        <label>Coordinate reference<input id="crs" value="WGS84 / local ENU" readonly></label>
+        <label>Body-centre latitude (°)<input id="bodyLat" type="number" value="37.5900" min="-85" max="85" step="0.0001"></label>
+        <label>Body-centre longitude (°)<input id="bodyLon" type="number" value="127.0300" min="-180" max="180" step="0.0001"></label>
+        <label>Body-centre depth (km)<input id="bodyDepth" type="number" value="4.000" min="0.5" max="40" step="0.1"></label>
+        <label>Grid-centre latitude (°)<input id="gridLat" type="number" value="37.5900" min="-85" max="85" step="0.0001"></label>
+        <label>Grid-centre longitude (°)<input id="gridLon" type="number" value="127.0300" min="-180" max="180" step="0.0001"></label>
+        <label>Observation height (m)<input id="obsHeight" type="number" value="0" step="10"></label>
+        <label>Grid extent X × Y (km)<select id="extent"><option value="12,10">12 × 10</option><option value="16,12" selected>16 × 12</option><option value="24,18">24 × 18</option></select></label>
+      </div>
+    </section>
+
+    <section class="panel coupled-workspace">
+      <div class="section-head"><div><b>02</b> Coupled modelling workspace</div><small>Sculpt the body on the left · inspect the gravity response on the right</small></div>
+        <div class="sculpt-toolbar" aria-label="Surface-sculpting tools">
+          <div class="tool-buttons" role="group" aria-label="Sculpting brushes">
+            <button class="active" data-sculpt="move">Pull</button>
+            <button data-sculpt="inflate">Inflate</button>
+            <button data-sculpt="deflate">Deflate</button>
+            <button data-sculpt="smooth">Smooth</button>
+            <button data-sculpt="height">Move depth</button>
+          </div>
+          <label>Radius <output id="brushRadiusValue">1.20 km</output><input id="brushRadius" type="range" min="0.25" max="3.0" step="0.05" value="1.2"></label>
+          <label>Strength <output id="brushStrengthValue">45%</output><input id="brushStrength" type="range" min="5" max="100" step="5" value="45"></label>
+        </div>
+        <div class="topology-toolbar" aria-label="Boundary-point and cross-section editing">
+          <output id="selectionInfo">Section 5 · no point selected</output>
+          <button id="addVertex" disabled>Add point <kbd>A</kbd></button>
+          <button id="deleteVertex" disabled>Delete point <kbd>Delete</kbd></button>
+          <button id="addRing">Add section <kbd>⇧A</kbd></button>
+          <button id="deleteRing">Delete entire section <kbd>⇧Delete</kbd></button>
+          <button id="undoEdit" disabled>Undo <kbd>⌘/Ctrl Z</kbd></button>
+        </div>
+      <div class="coupled-views">
+        <section class="view-pane model-pane" aria-label="Three-dimensional body editor">
+          <div class="view-title"><strong>3D density body</strong><span>Drag boundary points · rotate empty space · wheel to zoom</span></div>
+          <div class="canvas-wrap model-wrap">
+            <canvas id="modelCanvas" aria-label="Editable three-dimensional density body"></canvas>
+            <div class="overlay top-right">X: Easting · Y: Northing · Z: depth</div>
+            <div class="overlay bottom-left"><i></i> Click to select · drag to sculpt</div>
+          </div>
+        </section>
+        <section class="view-pane field-pane" aria-label="Live gravity response">
+          <div class="view-title live-title"><strong>Live gravity response Δg<sub>z</sub></strong><span>Updates automatically after geometry editing</span></div>
+          <div class="canvas-wrap field-wrap">
+            <canvas id="fieldCanvas" aria-label="Georeferenced gravity-anomaly map"></canvas>
+            <div class="compute-status"><i id="statusDot"></i><span id="statusText">Preparing calculation</span></div>
+          </div>
+          <div class="legend"><span id="legendMin">—</span><div class="legend-bar"></div><span id="legendMax">—</span></div>
+          <div class="metrics">
+            <div><small>Minimum</small><strong id="minMetric">—</strong></div>
+            <div><small>Maximum</small><strong id="maxMetric">—</strong></div>
+            <div><small>Max–min</small><strong id="rangeMetric">—</strong></div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section class="panel controls" aria-label="Physical-property and calculation settings">
+      <div class="section-head"><div><b>03</b> Physical properties and calculation</div><small>Automatic live recalculation after input and geometry changes</small></div>
+      <div class="control-grid">
+        <div class="control-block">
+          <div class="control-title"><label for="density">Density contrast Δρ</label><output id="densityValue">+350 kg/m³</output></div>
+          <input id="density" type="range" min="-1000" max="1000" step="25" value="350">
+        </div>
+        <div class="control-block">
+          <div class="control-title"><label for="precision">Calculation resolution</label><output id="cellValue">0.18 km</output></div>
+          <select id="precision"><option value="standard">Standard · 0.30 km</option><option value="high" selected>High · 0.18 km</option><option value="research">Research · 0.10 km</option></select>
+        </div>
+        <div class="control-block">
+          <div class="control-title"><label for="ringSelect">Editing section</label><output id="ringDepth">—</output></div>
+          <select id="ringSelect"></select>
+        </div>
+        <div class="control-block">
+          <div class="control-title"><span>Selected-section size</span><output id="scaleState">100%</output></div>
+          <div class="split-buttons"><button id="shrinkRing">− 10%</button><button id="growRing">+ 10%</button></div>
+        </div>
+        <div class="control-block wide">
+          <div class="control-title"><span>Preset geometry</span><output>10 sections · 24 points per section</output></div>
+          <div class="preset-buttons"><button class="active" data-preset="diapir">Diapir</button><button data-preset="lens">Lens</button><button data-preset="slab">Slab</button></div>
+        </div>
+        <div class="control-block topo-block">
+          <div class="control-title"><label class="toggle-label"><input id="topoToggle" type="checkbox"> Apply topographic surface</label><output id="topoState">OFF</output></div>
+          <button id="loadTopo" class="topo-load">Load terrain for current coordinates</button>
+        </div>
+      </div>
+      <div class="action-row">
+        <div class="dimension-tools">
+          <label>E width <output id="scaleXValue">100%</output><input id="scaleX" type="range" min="40" max="220" step="5" value="100"></label>
+          <label>N width <output id="scaleYValue">100%</output><input id="scaleY" type="range" min="40" max="220" step="5" value="100"></label>
+          <label>Height <output id="scaleZValue">100%</output><input id="scaleZ" type="range" min="40" max="220" step="5" value="100"></label>
+        </div>
+        <button class="secondary" id="resetView">Reset view</button>
+        <button class="secondary" id="toggleVoxels">Voxel preview OFF</button>
+        <button class="secondary" id="saveModel">Save model JSON</button>
+        <button class="secondary" id="exportCsv">Export anomaly CSV</button>
+        <button class="secondary" id="exportPng">Export anomaly PNG</button>
+        <button class="primary" id="rebuildVoxels">Rebuild voxels and calculate</button>
+      </div>
+    </section>
+
+    <section class="diagnostics">
+      <article class="panel diagnostic-card"><span>Rectangular-prism count</span><strong id="prismCount">—</strong><small>Including 2 × 2 boundary subcells</small></article>
+      <article class="panel diagnostic-card"><span>Calculation time</span><strong id="elapsed">—</strong><small>For the current browser</small></article>
+      <article class="panel diagnostic-card"><span>Centre-point convergence difference</span><strong id="convergence">—</strong><small>Current grid versus 1.6× spacing</small></article>
+      <article class="panel diagnostic-card"><span>Volume</span><strong id="volume">—</strong><small>Sum of rectangular-prism volumes</small></article>
+    </section>
+
+    <section class="notes">
+      <article class="panel"><h2>Geometry sculpting and numerical calculation</h2><p>Surface points within the brush radius are deformed with distance weighting for pulling, inflation, deflation, and smoothing. Selected boundary points and cross-sections can be added or deleted. Cross-sections with different point counts are periodically resampled before voxelization. After editing, rebuild the voxels to evaluate the vertical gravity component of each rectangular prism analytically.</p></article>
+      <article class="panel"><h2>Terrain data and scope</h2><p>When terrain is enabled, AWS Open Data Terrain Tiles are loaded and gravity is calculated at the terrain elevation of each observation-grid point. Source data and effective spatial resolution vary by region. The calculation represents a homogeneous density-contrast body in a local WGS84 tangent plane; it does not include the reference gravity field or corrections applied to observed gravity data.</p></article>
+    </section>
+
+    <footer>Gravity calculations are performed in the browser. Terrain Tiles for the specified region are downloaded from AWS Open Data only when terrain loading is requested. Terrain: Mapzen · AWS Open Data.</footer>
+  </main>
+  <script>
+(() => {
+  'use strict';
+
+  const G = 6.67430e-11;
+  const TAU = Math.PI * 2;
+  const TERRAIN_ZOOM = 12;
+  const TERRAIN_URL = 'https://s3.amazonaws.com/elevation-tiles-prod/terrarium';
+  const palette = [
+    [0.00, [22, 58, 134]], [0.20, [31, 121, 190]], [0.42, [72, 210, 205]],
+    [0.63, [242, 229, 94]], [0.82, [239, 111, 53]], [1.00, [140, 22, 51]]
+  ];
+  const precisionTable = {
+    standard: { h: .30, nx: 41, ny: 33 },
+    high: { h: .18, nx: 55, ny: 45 },
+    research: { h: .10, nx: 71, ny: 57 }
+  };
+  const presetSpecs = {
+    diapir: [
+      [-2.20, .75, .62, -.18, .05], [-1.35, 1.35, .98, -.10, .04],
+      [-.45, 2.35, 1.55, 0, 0], [.45, 2.60, 1.75, .08, -.03],
+      [1.35, 2.00, 1.42, .18, -.08], [2.20, .85, .66, .15, -.05]
+    ],
+    lens: [
+      [-1.35, .70, .40, 0, 0], [-.85, 2.15, 1.10, .05, 0],
+      [-.30, 3.15, 1.55, .18, .02], [.30, 3.20, 1.58, -.08, .06],
+      [.85, 2.05, 1.02, -.18, .05], [1.35, .65, .36, 0, 0]
+    ],
+    slab: [
+      [-1.75, 2.85, .58, -.72, 0], [-1.05, 3.15, .70, -.45, .02],
+      [-.35, 3.45, .80, -.15, .04], [.35, 3.48, .82, .18, .04],
+      [1.05, 3.12, .70, .52, .02], [1.75, 2.72, .55, .82, 0]
+    ]
+  };
+
+  const modelCanvas = document.getElementById('modelCanvas');
+  const fieldCanvas = document.getElementById('fieldCanvas');
+  const mctx = modelCanvas.getContext('2d');
+  const fctx = fieldCanvas.getContext('2d');
+  const tileCache = new Map();
+  const state = {
+    rings: [], preset: 'diapir', selectedRing: 4, selectedVertex: -1,
+    yaw: -.72, pitch: .55, zoom: 1, drag: null,
+    density: 350, field: null, topography: null, topoEnabled: false,
+    worker: null, job: 0, computeTimer: null, topoTimer: null,
+    sculptMode: 'move', brushRadius: 1.2, brushStrength: .45,
+    hover: null, voxelPreview: false, voxels: [], dirty: false, history: []
+  };
+
+  const $ = id => document.getElementById(id);
+  const num = id => Number($(id).value);
+  const cloneRings = rings => rings.map(r => ({ z: r.z, points: r.points.map(p => ({ x: p.x, y: p.y })) }));
+  function sampleClosed(points, n) {
+    if (points.length === n) return points.map(p => ({ ...p }));
+    const lengths = points.map((p, i) => Math.hypot(points[(i + 1) % points.length].x - p.x, points[(i + 1) % points.length].y - p.y)), total = lengths.reduce((s, v) => s + v, 0);
+    return Array.from({ length: n }, (_, i) => {
+      let d = i * total / n, k = 0; while (k < lengths.length - 1 && d > lengths[k]) { d -= lengths[k]; k++; }
+      const p = points[k], q = points[(k + 1) % points.length], t = lengths[k] ? d / lengths[k] : 0;
+      return { x: p.x * (1 - t) + q.x * t, y: p.y * (1 - t) + q.y * t };
+    });
+  }
+  function pushHistory() {
+    if (!state.rings.length) return;
+    state.history.push({ rings: cloneRings(state.rings), selectedRing: state.selectedRing, selectedVertex: state.selectedVertex });
+    if (state.history.length > 30) state.history.shift();
+    $('undoEdit').disabled = false;
+  }
+  const config = () => {
+    const [extentX, extentY] = $('extent').value.split(',').map(Number);
+    const p = precisionTable[$('precision').value];
+    return {
+      bodyLat: num('bodyLat'), bodyLon: num('bodyLon'), bodyDepth: num('bodyDepth'),
+      gridLat: num('gridLat'), gridLon: num('gridLon'), obsHeight: num('obsHeight'),
+      extentX, extentY, h: p.h, nx: p.nx, ny: p.ny,
+      density: state.density, rings: state.rings
+    };
+  };
+
+  function bodyOffset(c = config()) {
+    const y = (c.bodyLat - c.gridLat) * 110.574;
+    const x = (c.bodyLon - c.gridLon) * 111.320 * Math.cos(c.gridLat * Math.PI / 180);
+    return { x, y };
+  }
+
+  function localToLatLon(x, y, c = config()) {
+    return {
+      lat: c.gridLat + y / 110.574,
+      lon: c.gridLon + x / (111.320 * Math.cos(c.gridLat * Math.PI / 180))
+    };
+  }
+
+  function buildPreset(name) {
+    const n = 24, layers = 10, specs = presetSpecs[name];
+    state.rings = Array.from({ length: layers }, (_, ri) => {
+      const u = ri / (layers - 1) * (specs.length - 1), k = Math.min(specs.length - 2, Math.floor(u)), t = u - k;
+      const s = specs[k].map((v, j) => v * (1 - t) + specs[k + 1][j] * t);
+      return {
+      z: s[0],
+      points: Array.from({ length: n }, (_, i) => {
+        const a = TAU * i / n;
+        const rough = 1 + .025 * Math.sin(i * 2.31 + ri * .67);
+        return { x: s[3] + Math.cos(a) * s[1] * rough, y: s[4] + Math.sin(a) * s[2] * rough };
+      })
+    }; });
+    state.preset = name; state.selectedRing = 4; state.selectedVertex = -1; state.voxels = []; state.dirty = false; state.history = [];
+    ['scaleX','scaleY','scaleZ'].forEach(id => { $(id).value = 100; $(`${id}Value`).textContent = '100%'; $(id).dataset.last = '100'; });
+    $('rebuildVoxels').classList.remove('dirty'); $('undoEdit').disabled = true;
+    document.querySelectorAll('[data-preset]').forEach(b => b.classList.toggle('active', b.dataset.preset === name));
+    updateRingSelect(); drawModel(); requestGravity();
+  }
+
+  function resizeCanvas(canvas, ctx) {
+    const rect = canvas.getBoundingClientRect();
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const w = Math.max(1, Math.round(rect.width * dpr)), h = Math.max(1, Math.round(rect.height * dpr));
+    if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; }
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { w: rect.width, h: rect.height };
+  }
+
+  function project(p, size) {
+    const c = config();
+    const cy = Math.cos(state.yaw), sy = Math.sin(state.yaw), cp = Math.cos(state.pitch), sp = Math.sin(state.pitch);
+    const xr = p.x * cy - p.y * sy, yr = p.x * sy + p.y * cy;
+    const scale = Math.min(size.w / c.extentX, size.h / Math.max(c.extentY, 10)) * .78 * state.zoom;
+    return { x: size.w * .5 + xr * scale, y: size.h * .20 + (p.z * cp - yr * sp) * scale, depth: yr * cp + p.z * sp, scale };
+  }
+
+  function topoAtLocal(x, y) {
+    const t = state.topography;
+    if (!t) return 0;
+    const u = (x / t.extentX + .5) * (t.nx - 1), v = (y / t.extentY + .5) * (t.ny - 1);
+    const i = Math.max(0, Math.min(t.nx - 1, Math.round(u))), j = Math.max(0, Math.min(t.ny - 1, Math.round(v)));
+    return t.values[j * t.nx + i] || 0;
+  }
+
+  function bodySurfaceShift() {
+    if (!state.topoEnabled || !state.topography) return 0;
+    const o = bodyOffset();
+    return -topoAtLocal(o.x, o.y) / 1000;
+  }
+
+  function drawPath3(points, color, width, dash = []) {
+    const size = { w: modelCanvas.clientWidth, h: modelCanvas.clientHeight };
+    const pp = points.map(p => project(p, size));
+    mctx.beginPath(); pp.forEach((p, i) => i ? mctx.lineTo(p.x, p.y) : mctx.moveTo(p.x, p.y));
+    mctx.strokeStyle = color; mctx.lineWidth = width; mctx.setLineDash(dash); mctx.stroke(); mctx.setLineDash([]);
+  }
+
+  function drawSurface(size) {
+    const c = config(), ex = c.extentX / 2, ey = c.extentY / 2;
+    if (state.topoEnabled && state.topography) {
+      const cols = 13, rows = 9;
+      for (let j = 0; j < rows; j++) {
+        const line = [];
+        for (let i = 0; i < cols; i++) {
+          const x = -ex + c.extentX * i / (cols - 1), y = -ey + c.extentY * j / (rows - 1);
+          line.push({ x, y, z: -topoAtLocal(x, y) / 1000 });
+        }
+        drawPath3(line, 'rgba(105,145,158,.34)', .75);
+      }
+      for (let i = 0; i < cols; i++) {
+        const line = [];
+        for (let j = 0; j < rows; j++) {
+          const x = -ex + c.extentX * i / (cols - 1), y = -ey + c.extentY * j / (rows - 1);
+          line.push({ x, y, z: -topoAtLocal(x, y) / 1000 });
+        }
+        drawPath3(line, 'rgba(105,145,158,.34)', .75);
+      }
+    } else {
+      for (let x = -ex; x <= ex + .01; x += 1) drawPath3([{ x, y: -ey, z: 0 }, { x, y: ey, z: 0 }], Math.abs(x) < .01 ? '#4e697a' : '#213544', Math.abs(x) < .01 ? 1.1 : .7);
+      for (let y = -ey; y <= ey + .01; y += 1) drawPath3([{ x: -ex, y, z: 0 }, { x: ex, y, z: 0 }], Math.abs(y) < .01 ? '#4e697a' : '#213544', Math.abs(y) < .01 ? 1.1 : .7);
+    }
+  }
+
+  function drawModel() {
+    const size = resizeCanvas(modelCanvas, mctx), c = config(), off = bodyOffset(c), zShift = bodySurfaceShift();
+    mctx.clearRect(0, 0, size.w, size.h);
+    const bg = mctx.createLinearGradient(0, 0, 0, size.h); bg.addColorStop(0, '#0c1a24'); bg.addColorStop(1, '#071019');
+    mctx.fillStyle = bg; mctx.fillRect(0, 0, size.w, size.h); drawSurface(size);
+
+    const faces = [];
+    for (let r = 0; r < state.rings.length - 1; r++) {
+      const a = state.rings[r], b = state.rings[r + 1], n = Math.max(a.points.length, b.points.length), ap = sampleClosed(a.points, n), bp = sampleClosed(b.points, n);
+      for (let i = 0; i < n; i++) {
+        const q = (i + 1) % n;
+        const verts = [
+          { x: ap[i].x + off.x, y: ap[i].y + off.y, z: c.bodyDepth + a.z + zShift },
+          { x: ap[q].x + off.x, y: ap[q].y + off.y, z: c.bodyDepth + a.z + zShift },
+          { x: bp[q].x + off.x, y: bp[q].y + off.y, z: c.bodyDepth + b.z + zShift },
+          { x: bp[i].x + off.x, y: bp[i].y + off.y, z: c.bodyDepth + b.z + zShift }
+        ];
+        const pp = verts.map(p => project(p, size));
+        faces.push({ pp, depth: pp.reduce((s, p) => s + p.depth, 0) / 4, r });
+      }
+    }
+    faces.sort((a, b) => a.depth - b.depth).forEach(f => {
+      mctx.beginPath(); f.pp.forEach((p, i) => i ? mctx.lineTo(p.x, p.y) : mctx.moveTo(p.x, p.y)); mctx.closePath();
+      mctx.fillStyle = `rgba(52,187,181,${.15 + f.r * .025})`; mctx.fill();
+      mctx.strokeStyle = 'rgba(94,225,214,.29)'; mctx.lineWidth = .7; mctx.stroke();
+    });
+    state.rings.forEach((ring, ri) => {
+      const pts = ring.points.map(p => project({ x: p.x + off.x, y: p.y + off.y, z: c.bodyDepth + ring.z + zShift }, size));
+      mctx.beginPath(); pts.forEach((p, i) => i ? mctx.lineTo(p.x, p.y) : mctx.moveTo(p.x, p.y)); mctx.closePath();
+      mctx.strokeStyle = ri === state.selectedRing ? '#7affef' : 'rgba(174,239,232,.58)'; mctx.lineWidth = ri === state.selectedRing ? 1.8 : .9; mctx.stroke();
+      if (ri === state.selectedRing) pts.forEach((p, i) => {
+        mctx.beginPath(); mctx.arc(p.x, p.y, i === state.selectedVertex ? 6 : 4.2, 0, TAU);
+        mctx.fillStyle = i === state.selectedVertex ? '#ffd166' : '#49d9cf'; mctx.fill(); mctx.strokeStyle = '#061116'; mctx.lineWidth = 1.4; mctx.stroke();
+      });
+      else pts.forEach(p => { mctx.beginPath(); mctx.arc(p.x, p.y, 1.25, 0, TAU); mctx.fillStyle = 'rgba(125,226,218,.45)'; mctx.fill(); });
+    });
+    if (state.voxelPreview && state.voxels.length) {
+      const projected = state.voxels.map(v => project({ x: v[0], y: v[1], z: v[2] }, size)).sort((a, b) => a.depth - b.depth);
+      projected.forEach(p => { mctx.fillStyle = 'rgba(255,209,102,.32)'; mctx.fillRect(p.x - 1.6, p.y - 1.6, 3.2, 3.2); });
+    }
+    const center = project({ x: off.x, y: off.y, z: c.bodyDepth + zShift }, size);
+    mctx.strokeStyle = '#ffd166'; mctx.lineWidth = 1.2; mctx.beginPath(); mctx.moveTo(center.x - 7, center.y); mctx.lineTo(center.x + 7, center.y); mctx.moveTo(center.x, center.y - 7); mctx.lineTo(center.x, center.y + 7); mctx.stroke();
+    mctx.fillStyle = '#ffd166'; mctx.font = '10px ui-monospace'; mctx.fillText('centre', center.x + 9, center.y - 5);
+    if (state.hover) {
+      const radiusPx = state.brushRadius * state.hover.scale;
+      mctx.beginPath(); mctx.arc(state.hover.x, state.hover.y, radiusPx, 0, TAU);
+      mctx.strokeStyle = 'rgba(255,209,102,.82)'; mctx.lineWidth = 1.2; mctx.setLineDash([4, 3]); mctx.stroke(); mctx.setLineDash([]);
+      mctx.beginPath(); mctx.arc(state.hover.x, state.hover.y, 3, 0, TAU); mctx.fillStyle = '#ffd166'; mctx.fill();
+    }
+  }
+
+  function getSurfaceVertices() {
+    const c = config(), off = bodyOffset(c), zShift = bodySurfaceShift(), size = { w: modelCanvas.clientWidth, h: modelCanvas.clientHeight }, out = [];
+    state.rings.forEach((ring, ri) => ring.points.forEach((p, vi) => {
+      const pp = project({ x: p.x + off.x, y: p.y + off.y, z: c.bodyDepth + ring.z + zShift }, size);
+      out.push({ ...pp, ri, vi, lx: p.x, ly: p.y, lz: ring.z });
+    }));
+    return out;
+  }
+
+  function nearestSurface(p) {
+    let hit = null, best = Infinity;
+    getSurfaceVertices().forEach(h => { const d = Math.hypot(h.x - p.x, h.y - p.y); if (d < best) { best = d; hit = h; } });
+    return hit ? { ...hit, screenDistance: best } : null;
+  }
+
+  function markDirty() {
+    state.dirty = true; state.voxels = []; markCustom();
+    $('rebuildVoxels').classList.add('dirty'); $('statusText').textContent = 'Geometry modified · voxel rebuild required'; $('statusDot').classList.remove('busy');
+  }
+
+  function smoothAt(anchor, amount) {
+    const copy = state.rings.map(r => r.points.map(p => ({ ...p })));
+    state.rings.forEach((ring, ri) => ring.points.forEach((p, vi) => {
+      const n = ring.points.length;
+      const dz = ring.z - anchor.lz, dx = p.x - anchor.lx, dy = p.y - anchor.ly, dist = Math.hypot(dx, dy, dz);
+      if (dist > state.brushRadius) return;
+      const w = Math.exp(-2.4 * (dist / state.brushRadius) ** 2), neighbors = [copy[ri][(vi - 1 + n) % n], copy[ri][(vi + 1) % n]];
+      const u = vi / n;
+      if (ri > 0) neighbors.push(copy[ri - 1][Math.round(u * copy[ri - 1].length) % copy[ri - 1].length]);
+      if (ri < state.rings.length - 1) neighbors.push(copy[ri + 1][Math.round(u * copy[ri + 1].length) % copy[ri + 1].length]);
+      const ax = neighbors.reduce((s, q) => s + q.x, 0) / neighbors.length, ay = neighbors.reduce((s, q) => s + q.y, 0) / neighbors.length, f = Math.min(.38, amount * w);
+      p.x += (ax - p.x) * f; p.y += (ay - p.y) * f;
+    }));
+  }
+
+  function sculptStroke(d, p) {
+    const size = { w: modelCanvas.clientWidth, h: modelCanvas.clientHeight }, scale = project({ x: 0, y: 0, z: 0 }, size).scale;
+    const sx = p.x - d.x, syScreen = p.y - d.y, stroke = Math.hypot(sx, syScreen) / scale;
+    if (stroke < 1e-5) return;
+    if (!d.historySaved) { pushHistory(); d.historySaved = true; }
+    if (state.sculptMode === 'height') {
+      const dzMove = syScreen / (scale * Math.max(.25, Math.cos(state.pitch))) * state.brushStrength;
+      state.rings.forEach(ring => { const dist = Math.abs(ring.z - d.anchor.lz); if (dist <= state.brushRadius) ring.z += dzMove * Math.exp(-2.4 * (dist / state.brushRadius) ** 2); });
+      for (let i = 1; i < state.rings.length; i++) state.rings[i].z = Math.max(state.rings[i].z, state.rings[i - 1].z + .06);
+    } else if (state.sculptMode === 'smooth') smoothAt(d.anchor, Math.max(.05, stroke * state.brushStrength * 2.2));
+    else {
+      const dxr = sx / scale, dyr = -syScreen / (scale * Math.max(.22, Math.sin(state.pitch))), cy = Math.cos(state.yaw), sy = Math.sin(state.yaw);
+      const moveX = (dxr * cy + dyr * sy) * state.brushStrength, moveY = (-dxr * sy + dyr * cy) * state.brushStrength;
+      state.rings.forEach((ring, ri) => {
+        const cx = ring.points.reduce((s, q) => s + q.x, 0) / ring.points.length, cy0 = ring.points.reduce((s, q) => s + q.y, 0) / ring.points.length;
+        ring.points.forEach(pt => {
+          const dist = Math.hypot(pt.x - d.anchor.lx, pt.y - d.anchor.ly, ring.z - d.anchor.lz); if (dist > state.brushRadius) return;
+          const w = Math.exp(-2.4 * (dist / state.brushRadius) ** 2);
+          if (state.sculptMode === 'move') { pt.x += moveX * w; pt.y += moveY * w; }
+          else {
+            const rx = pt.x - cx, ry = pt.y - cy0, rl = Math.hypot(rx, ry) || 1, sign = state.sculptMode === 'inflate' ? 1 : -1, amount = stroke * state.brushStrength * sign * w;
+            pt.x += rx / rl * amount; pt.y += ry / rl * amount;
+          }
+        });
+      });
+    }
+    d.x = p.x; d.y = p.y; d.anchor = { ...d.anchor, lx: state.rings[d.anchor.ri].points[d.anchor.vi].x, ly: state.rings[d.anchor.ri].points[d.anchor.vi].y, lz: state.rings[d.anchor.ri].z };
+    state.selectedRing = d.anchor.ri; state.selectedVertex = d.anchor.vi; markDirty();
+    $('ringSelect').value = String(state.selectedRing); $('ringDepth').textContent = `${(num('bodyDepth') + state.rings[state.selectedRing].z).toFixed(2)} km`;
+    updateSelectionControls();
+  }
+
+  function pointerPos(e) { const r = modelCanvas.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
+  modelCanvas.addEventListener('pointerdown', e => {
+    const p = pointerPos(e), hit = nearestSurface(p), limit = hit ? Math.max(20, state.brushRadius * hit.scale) : 20;
+    state.drag = hit && hit.screenDistance <= limit ? { type: 'sculpt', anchor: hit, x: p.x, y: p.y } : { type: 'orbit', x: p.x, y: p.y, yaw: state.yaw, pitch: state.pitch };
+    state.selectedRing = hit && hit.screenDistance <= limit ? hit.ri : state.selectedRing; state.selectedVertex = hit && hit.screenDistance <= limit ? hit.vi : -1;
+    modelCanvas.setPointerCapture(e.pointerId); modelCanvas.classList.add('dragging'); updateSelectionControls(); drawModel();
+  });
+  modelCanvas.addEventListener('pointermove', e => {
+    const p = pointerPos(e);
+    if (!state.drag) { const hit = nearestSurface(p); state.hover = hit && hit.screenDistance < Math.max(28, state.brushRadius * hit.scale) ? hit : null; drawModel(); return; }
+    const d = state.drag;
+    if (d.type === 'orbit') { state.yaw = d.yaw + (p.x - d.x) * .009; state.pitch = Math.max(.2, Math.min(1.1, d.pitch + (p.y - d.y) * .006)); }
+    else sculptStroke(d, p);
+    drawModel();
+  });
+  function endDrag(e) { if (!state.drag) return; const edited = state.drag.type === 'sculpt' && state.dirty; state.drag = null; modelCanvas.classList.remove('dragging'); if (modelCanvas.hasPointerCapture(e.pointerId)) modelCanvas.releasePointerCapture(e.pointerId); drawModel(); if (edited) requestGravity(); }
+  modelCanvas.addEventListener('pointerup', endDrag); modelCanvas.addEventListener('pointercancel', endDrag);
+  modelCanvas.addEventListener('pointerleave', () => { if (!state.drag) { state.hover = null; drawModel(); } });
+  modelCanvas.addEventListener('wheel', e => { e.preventDefault(); state.zoom = Math.max(.55, Math.min(2, state.zoom * Math.exp(-e.deltaY * .001))); drawModel(); }, { passive: false });
+
+  function workerMain() {
+    const G = 6.67430e-11;
+    function sampleClosed(points, n) {
+      if (points.length === n) return points;
+      const lengths = points.map((p, i) => Math.hypot(points[(i + 1) % points.length].x - p.x, points[(i + 1) % points.length].y - p.y)), total = lengths.reduce((s, v) => s + v, 0);
+      return Array.from({ length: n }, (_, i) => {
+        let d = i * total / n, k = 0; while (k < lengths.length - 1 && d > lengths[k]) { d -= lengths[k]; k++; }
+        const p = points[k], q = points[(k + 1) % points.length], t = lengths[k] ? d / lengths[k] : 0;
+        return { x: p.x * (1 - t) + q.x * t, y: p.y * (1 - t) + q.y * t };
+      });
+    }
+    function pointInPolygon(x, y, poly) {
+      let inside = false;
+      for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+        const a = poly[i], b = poly[j];
+        if (((a.y > y) !== (b.y > y)) && x < (b.x - a.x) * (y - a.y) / ((b.y - a.y) || 1e-15) + a.x) inside = !inside;
+      }
+      return inside;
+    }
+    function ringAt(z, rings) {
+      let k = 0; while (k < rings.length - 2 && z > rings[k + 1].z) k++;
+      const a = rings[k], b = rings[k + 1], t = Math.max(0, Math.min(1, (z - a.z) / (b.z - a.z)));
+      const n = Math.max(a.points.length, b.points.length), ap = sampleClosed(a.points, n), bp = sampleClosed(b.points, n);
+      return ap.map((p, i) => ({ x: p.x * (1 - t) + bp[i].x * t, y: p.y * (1 - t) + bp[i].y * t }));
+    }
+    function insideAt(x, y, z, rings) {
+      if (z < rings[0].z || z > rings[rings.length - 1].z) return false;
+      return pointInPolygon(x, y, ringAt(z, rings));
+    }
+    function boundary(x, y, a, b, targetInside, rings) {
+      for (let n = 0; n < 13; n++) { const m = (a + b) / 2; if (insideAt(x, y, m, rings) === targetInside) b = m; else a = m; }
+      return (a + b) / 2;
+    }
+    function intervalsAt(x, y, rings) {
+      const z0 = rings[0].z, z1 = rings[rings.length - 1].z, n = 96, dz = (z1 - z0) / n, out = [];
+      let prevZ = z0, prev = insideAt(x, y, prevZ, rings), start = prev ? z0 : null;
+      for (let k = 1; k <= n; k++) {
+        const z = z0 + k * dz, now = insideAt(x, y, z, rings);
+        if (!prev && now) start = boundary(x, y, prevZ, z, true, rings);
+        if (prev && !now) { out.push([start, boundary(x, y, prevZ, z, false, rings)]); start = null; }
+        prev = now; prevZ = z;
+      }
+      if (prev && start !== null) out.push([start, z1]);
+      return out;
+    }
+    function makePrisms(c, spacing) {
+      const offX = (c.bodyLon - c.gridLon) * 111.320 * Math.cos(c.gridLat * Math.PI / 180);
+      const offY = (c.bodyLat - c.gridLat) * 110.574;
+      const all = c.rings.flatMap(r => r.points), minX = Math.min(...all.map(p => p.x)), maxX = Math.max(...all.map(p => p.x));
+      const minY = Math.min(...all.map(p => p.y)), maxY = Math.max(...all.map(p => p.y));
+      const sub = spacing / 2, prisms = []; let volume = 0;
+      for (let y = minY - spacing / 2; y <= maxY + spacing / 2; y += sub) for (let x = minX - spacing / 2; x <= maxX + spacing / 2; x += sub) {
+        const ints = intervalsAt(x, y, c.rings);
+        for (const it of ints) {
+          if (it[1] - it[0] < 1e-5) continue;
+          const top = c.bodyDepth + c.bodySurfaceShift + it[0], bottom = c.bodyDepth + c.bodySurfaceShift + it[1];
+          prisms.push([x + offX - sub / 2, x + offX + sub / 2, y + offY - sub / 2, y + offY + sub / 2, top, bottom]);
+          volume += sub * sub * (bottom - top);
+        }
+      }
+      return { prisms, volume };
+    }
+    function primitive(x, y, z) {
+      const r = Math.hypot(x, y, z), ly = Math.log(Math.max(1e-30, y + r)), lx = Math.log(Math.max(1e-30, x + r));
+      return x * ly + y * lx - z * Math.atan2(x * y, z * r);
+    }
+    function prismGz(p, ox, oy, oz, density) {
+      const xs = [(p[0] - ox) * 1000, (p[1] - ox) * 1000], ys = [(p[2] - oy) * 1000, (p[3] - oy) * 1000], zs = [(p[4] - oz) * 1000, (p[5] - oz) * 1000];
+      let s = 0;
+      for (let i = 0; i < 2; i++) for (let j = 0; j < 2; j++) for (let k = 0; k < 2; k++) s += ((i + j + k) & 1 ? -1 : 1) * primitive(xs[i], ys[j], zs[k]);
+      return G * density * s * 1e5;
+    }
+    self.onmessage = e => {
+      const { c, topo, job } = e.data, t0 = performance.now(), main = makePrisms(c, c.h);
+      const values = new Float64Array(c.nx * c.ny); let min = Infinity, max = -Infinity;
+      for (let j = 0; j < c.ny; j++) {
+        const y = -c.extentY / 2 + c.extentY * j / (c.ny - 1);
+        for (let i = 0; i < c.nx; i++) {
+          const x = -c.extentX / 2 + c.extentX * i / (c.nx - 1), elevation = topo ? topo[j * c.nx + i] : 0;
+          const obsZ = -(elevation + c.obsHeight) / 1000; let gz = 0;
+          for (const p of main.prisms) gz += prismGz(p, x, y, obsZ, c.density);
+          values[j * c.nx + i] = gz; min = Math.min(min, gz); max = Math.max(max, gz);
+        }
+        if (!(j % 4)) self.postMessage({ type: 'progress', job, progress: (j + 1) / c.ny });
+      }
+      const coarse = makePrisms(c, c.h * 1.6), ci = Math.floor(c.nx / 2), cj = Math.floor(c.ny / 2), ce = topo ? topo[cj * c.nx + ci] : 0, coz = -(ce + c.obsHeight) / 1000;
+      let coarseCenter = 0; for (const p of coarse.prisms) coarseCenter += prismGz(p, 0, 0, coz, c.density);
+      const mainCenter = values[cj * c.nx + ci], convergence = Math.abs(mainCenter - coarseCenter) / Math.max(Math.abs(mainCenter), 1e-9) * 100;
+      const preview = [], stride = Math.max(1, Math.ceil(main.prisms.length / 1200));
+      for (let n = 0; n < main.prisms.length; n += stride) { const p = main.prisms[n]; preview.push([(p[0] + p[1]) / 2, (p[2] + p[3]) / 2, (p[4] + p[5]) / 2]); }
+      self.postMessage({ type: 'result', job, values, min, max, prismCount: main.prisms.length, volume: main.volume, elapsed: performance.now() - t0, convergence, preview }, [values.buffer]);
+    };
+  }
+
+  function startWorker() {
+    if (state.worker) state.worker.terminate();
+    const source = `(${workerMain.toString()})()`;
+    state.worker = new Worker(URL.createObjectURL(new Blob([source], { type: 'text/javascript' })));
+    state.worker.onmessage = e => {
+      const d = e.data; if (d.job !== state.job) return;
+      if (d.type === 'progress') { $('statusText').textContent = `Analytical-kernel calculation ${Math.round(d.progress * 100)}%`; return; }
+      const c = config();
+      state.field = { ...d, nx: c.nx, ny: c.ny, extentX: c.extentX, extentY: c.extentY, values: new Float64Array(d.values) };
+      state.voxels = d.preview || []; state.dirty = false; $('rebuildVoxels').classList.remove('dirty');
+      drawField(); drawModel(); updateMetrics(); setBusy(false);
+    };
+    state.worker.onerror = err => { setBusy(false); $('statusText').textContent = `Calculation error: ${err.message}`; };
+  }
+
+  function requestGravity() {
+    clearTimeout(state.computeTimer); setBusy(true, 'Preparing calculation');
+    state.computeTimer = setTimeout(calculateGravity, 180);
+  }
+  function calculateGravity() {
+    const c = config(); state.job++;
+    const off = bodyOffset(c), centerElev = state.topoEnabled && state.topography ? topoAtLocal(off.x, off.y) : 0;
+    c.bodySurfaceShift = state.topoEnabled ? -centerElev / 1000 : 0;
+    const topo = state.topoEnabled && state.topography ? state.topography.values : null;
+    startWorker(); state.worker.postMessage({ c, topo, job: state.job });
+  }
+  function setBusy(busy, text) { $('statusDot').classList.toggle('busy', busy); $('statusText').textContent = text || (busy ? 'Recalculating' : 'Calculation complete'); }
+
+  function colorAt(t) {
+    t = Math.max(0, Math.min(1, t)); let a = palette[0], b = palette[palette.length - 1];
+    for (let i = 0; i < palette.length - 1; i++) if (t >= palette[i][0] && t <= palette[i + 1][0]) { a = palette[i]; b = palette[i + 1]; break; }
+    const u = (t - a[0]) / ((b[0] - a[0]) || 1); return a[1].map((v, i) => Math.round(v + (b[1][i] - v) * u));
+  }
+
+  function drawContours(ctx, values, nx, ny, level, pw, ph, stroke) {
+    const sx = pw / (nx - 1), sy = ph / (ny - 1), edge = (a, b) => (level - a) / ((b - a) || 1e-14);
+    ctx.beginPath();
+    for (let j = 0; j < ny - 1; j++) for (let i = 0; i < nx - 1; i++) {
+      const a = values[j * nx + i], b = values[j * nx + i + 1], c = values[(j + 1) * nx + i + 1], d = values[(j + 1) * nx + i], pts = [];
+      if ((a < level) !== (b < level)) pts.push([i + edge(a, b), j]); if ((b < level) !== (c < level)) pts.push([i + 1, j + edge(b, c)]);
+      if ((c < level) !== (d < level)) pts.push([i + edge(d, c), j + 1]); if ((d < level) !== (a < level)) pts.push([i, j + edge(a, d)]);
+      for (let q = 0; q + 1 < pts.length; q += 2) { ctx.moveTo(pts[q][0] * sx, ph - pts[q][1] * sy); ctx.lineTo(pts[q + 1][0] * sx, ph - pts[q + 1][1] * sy); }
+    }
+    ctx.strokeStyle = stroke; ctx.lineWidth = .65; ctx.stroke();
+  }
+
+  function drawField() {
+    const size = resizeCanvas(fieldCanvas, fctx); fctx.clearRect(0, 0, size.w, size.h); fctx.fillStyle = '#09131c'; fctx.fillRect(0, 0, size.w, size.h);
+    if (!state.field) return;
+    const f = state.field, c = config(), margin = { l: 55, r: 18, t: 22, b: 43 }, pw = size.w - margin.l - margin.r, ph = size.h - margin.t - margin.b;
+    const temp = document.createElement('canvas'); temp.width = f.nx; temp.height = f.ny; const tc = temp.getContext('2d'), img = tc.createImageData(f.nx, f.ny), range = f.max - f.min || 1;
+    for (let j = 0; j < f.ny; j++) for (let i = 0; i < f.nx; i++) { const src = j * f.nx + i, dst = ((f.ny - 1 - j) * f.nx + i) * 4, col = colorAt((f.values[src] - f.min) / range); img.data[dst] = col[0]; img.data[dst + 1] = col[1]; img.data[dst + 2] = col[2]; img.data[dst + 3] = 255; }
+    tc.putImageData(img, 0, 0); fctx.imageSmoothingEnabled = true; fctx.drawImage(temp, margin.l, margin.t, pw, ph);
+    fctx.save(); fctx.translate(margin.l, margin.t);
+    for (let k = 1; k < 8; k++) drawContours(fctx, f.values, f.nx, f.ny, f.min + range * k / 8, pw, ph, 'rgba(255,255,255,.20)');
+    if (state.topoEnabled && state.topography) {
+      const tv = state.topography.values, tmin = Math.min(...tv), tmax = Math.max(...tv), tr = tmax - tmin || 1;
+      for (let k = 1; k < 7; k++) drawContours(fctx, tv, f.nx, f.ny, tmin + tr * k / 7, pw, ph, 'rgba(9,18,27,.36)');
+    }
+    fctx.restore(); fctx.strokeStyle = '#718895'; fctx.strokeRect(margin.l, margin.t, pw, ph);
+    fctx.fillStyle = '#91a5b1'; fctx.font = '9px ui-monospace'; fctx.textAlign = 'center';
+    [-c.extentX / 2, 0, c.extentX / 2].forEach((x, k) => fctx.fillText(localToLatLon(x, 0, c).lon.toFixed(4), margin.l + pw * k / 2, size.h - 20));
+    fctx.fillText('Longitude (°)', margin.l + pw / 2, size.h - 5); fctx.textAlign = 'right';
+    [c.extentY / 2, 0, -c.extentY / 2].forEach((y, k) => fctx.fillText(localToLatLon(0, y, c).lat.toFixed(4), margin.l - 7, margin.t + ph * k / 2 + 3));
+    fctx.save(); fctx.translate(12, margin.t + ph / 2); fctx.rotate(-Math.PI / 2); fctx.textAlign = 'center'; fctx.fillText('Latitude (°)', 0, 0); fctx.restore();
+    fctx.textAlign = 'left'; fctx.fillStyle = 'rgba(255,255,255,.82)'; fctx.font = '600 9px ui-monospace';
+    const label = state.topoEnabled && state.topography ? `Terrain-surface observations · ${Math.min(...state.topography.values).toFixed(0)}–${Math.max(...state.topography.values).toFixed(0)} m` : `Planar observations · elevation ${c.obsHeight.toFixed(0)} m`;
+    fctx.fillText(label, margin.l + 7, margin.t + 14);
+  }
+
+  function fmt(v) { return `${v >= 0 ? '+' : ''}${v.toFixed(3)}`; }
+  function updateMetrics() {
+    const f = state.field; if (!f) return;
+    $('minMetric').textContent = `${fmt(f.min)} mGal`; $('maxMetric').textContent = `${fmt(f.max)} mGal`; $('rangeMetric').textContent = `${(f.max - f.min).toFixed(3)} mGal`;
+    $('legendMin').textContent = fmt(f.min); $('legendMax').textContent = fmt(f.max); $('prismCount').textContent = f.prismCount.toLocaleString();
+    $('elapsed').textContent = `${(f.elapsed / 1000).toFixed(2)} s`; $('convergence').textContent = `${f.convergence.toFixed(2)}%`; $('volume').textContent = `${f.volume.toFixed(2)} km³`;
+    $('statusText').textContent = `Calculation complete · ${f.prismCount.toLocaleString()} prisms`;
+  }
+
+  function updateRingSelect() {
+    const s = $('ringSelect'); s.innerHTML = '';
+    state.rings.forEach((r, i) => { const o = document.createElement('option'); o.value = i; o.textContent = `Section ${i + 1} · centre ${r.z >= 0 ? '+' : ''}${r.z.toFixed(2)} km`; s.appendChild(o); });
+    s.value = state.selectedRing; $('ringDepth').textContent = `${(num('bodyDepth') + state.rings[state.selectedRing].z).toFixed(2)} km`;
+    updateSelectionControls();
+  }
+  function updateSelectionControls() {
+    const ring = state.rings[state.selectedRing], valid = ring && state.selectedVertex >= 0 && state.selectedVertex < ring.points.length;
+    $('selectionInfo').textContent = ring ? `Section ${state.selectedRing + 1}/${state.rings.length} · ${valid ? `point ${state.selectedVertex + 1}/${ring.points.length}` : `no point selected · ${ring.points.length} points`}` : 'No geometry';
+    $('addVertex').disabled = !valid; $('deleteVertex').disabled = !valid || ring.points.length <= 3;
+    $('deleteRing').disabled = state.rings.length <= 3; $('undoEdit').disabled = state.history.length === 0;
+  }
+  function addVertex() {
+    const ring = state.rings[state.selectedRing], i = state.selectedVertex; if (!ring || i < 0) return;
+    pushHistory(); const a = ring.points[i], b = ring.points[(i + 1) % ring.points.length];
+    ring.points.splice(i + 1, 0, { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }); state.selectedVertex = i + 1;
+    markDirty(); updateSelectionControls(); drawModel(); requestGravity();
+  }
+  function deleteVertex() {
+    const ring = state.rings[state.selectedRing], i = state.selectedVertex; if (!ring || i < 0 || ring.points.length <= 3) return;
+    pushHistory(); ring.points.splice(i, 1); state.selectedVertex = Math.min(i, ring.points.length - 1);
+    markDirty(); updateSelectionControls(); drawModel(); requestGravity();
+  }
+  function addRing() {
+    if (state.rings.length < 2) return;
+    pushHistory(); let i = state.selectedRing, j = Math.min(i + 1, state.rings.length - 1), insert = i + 1;
+    if (i === j) { i--; j = i + 1; insert = j; }
+    const a = state.rings[i], b = state.rings[j], n = Math.max(a.points.length, b.points.length), ap = sampleClosed(a.points, n), bp = sampleClosed(b.points, n);
+    state.rings.splice(insert, 0, { z: (a.z + b.z) / 2, points: ap.map((p, k) => ({ x: (p.x + bp[k].x) / 2, y: (p.y + bp[k].y) / 2 })) });
+    state.selectedRing = insert; state.selectedVertex = -1; markDirty(); updateRingSelect(); drawModel(); requestGravity();
+  }
+  function deleteRing() {
+    if (state.rings.length <= 3) return;
+    pushHistory(); state.rings.splice(state.selectedRing, 1); state.selectedRing = Math.min(state.selectedRing, state.rings.length - 1); state.selectedVertex = -1;
+    markDirty(); updateRingSelect(); drawModel(); requestGravity();
+  }
+  function undoEdit() {
+    const prev = state.history.pop(); if (!prev) return;
+    state.rings = cloneRings(prev.rings); state.selectedRing = Math.min(prev.selectedRing, state.rings.length - 1); state.selectedVertex = prev.selectedVertex;
+    markDirty(); updateRingSelect(); drawModel(); requestGravity();
+  }
+  function markCustom() { state.preset = 'custom'; document.querySelectorAll('[data-preset]').forEach(b => b.classList.remove('active')); }
+  function scaleRing(factor) {
+    const r = state.rings[state.selectedRing], cx = r.points.reduce((s, p) => s + p.x, 0) / r.points.length, cy = r.points.reduce((s, p) => s + p.y, 0) / r.points.length;
+    pushHistory(); r.points.forEach(p => { p.x = cx + (p.x - cx) * factor; p.y = cy + (p.y - cy) * factor; }); markDirty(); $('scaleState').textContent = factor < 1 ? '−10%' : '+10%'; drawModel(); requestGravity();
+  }
+
+  function globalPixel(lat, lon, z) {
+    const n = 2 ** z, x = (lon + 180) / 360 * n * 256, rad = lat * Math.PI / 180, y = (1 - Math.asinh(Math.tan(rad)) / Math.PI) / 2 * n * 256; return { x, y };
+  }
+  async function getTile(z, x, y) {
+    const n = 2 ** z, xx = ((x % n) + n) % n, key = `${z}/${xx}/${y}`; if (tileCache.has(key)) return tileCache.get(key);
+    const promise = (async () => {
+      const res = await fetch(`${TERRAIN_URL}/${z}/${xx}/${y}.png`, { mode: 'cors' }); if (!res.ok) throw new Error(`Terrain Tile HTTP ${res.status}`);
+      const bmp = await createImageBitmap(await res.blob()), cv = document.createElement('canvas'); cv.width = 256; cv.height = 256; const cx = cv.getContext('2d', { willReadFrequently: true }); cx.drawImage(bmp, 0, 0); return cx.getImageData(0, 0, 256, 256).data;
+    })(); tileCache.set(key, promise); return promise;
+  }
+  async function fetchTopography() {
+    const c = config(); $('topoState').textContent = 'LOAD'; $('loadTopo').disabled = true; setBusy(true, 'Loading terrain tiles');
+    try {
+      const coords = [], keys = new Set();
+      for (let j = 0; j < c.ny; j++) for (let i = 0; i < c.nx; i++) {
+        const x = -c.extentX / 2 + c.extentX * i / (c.nx - 1), y = -c.extentY / 2 + c.extentY * j / (c.ny - 1), ll = localToLatLon(x, y, c), gp = globalPixel(ll.lat, ll.lon, TERRAIN_ZOOM);
+        const tx = Math.floor(gp.x / 256), ty = Math.floor(gp.y / 256); keys.add(`${tx},${ty}`); coords.push({ tx, ty, px: Math.floor(gp.x - tx * 256), py: Math.floor(gp.y - ty * 256) });
+      }
+      const tiles = new Map(); await Promise.all([...keys].map(async key => { const [x, y] = key.split(',').map(Number); tiles.set(key, await getTile(TERRAIN_ZOOM, x, y)); }));
+      const values = new Float64Array(c.nx * c.ny);
+      coords.forEach((p, idx) => { const data = tiles.get(`${p.tx},${p.ty}`), q = (p.py * 256 + p.px) * 4; values[idx] = data[q] * 256 + data[q + 1] + data[q + 2] / 256 - 32768; });
+      state.topography = { values, nx: c.nx, ny: c.ny, extentX: c.extentX, extentY: c.extentY, gridLat: c.gridLat, gridLon: c.gridLon, zoom: TERRAIN_ZOOM };
+      state.topoEnabled = true; $('topoToggle').checked = true; $('topoState').textContent = `ON · ${tiles.size} tiles`; drawModel(); requestGravity();
+    } catch (err) {
+      state.topoEnabled = false; $('topoToggle').checked = false; $('topoState').textContent = 'ERROR'; setBusy(false, `Terrain error: ${err.message}`);
+    } finally { $('loadTopo').disabled = false; }
+  }
+  function invalidateTopo() { state.topography = null; if (state.topoEnabled) { $('topoState').textContent = 'UPDATE REQUIRED'; clearTimeout(state.topoTimer); state.topoTimer = setTimeout(fetchTopography, 500); } }
+
+  function download(name, blob) { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); }
+  $('saveModel').addEventListener('click', () => download('gravity-model.json', new Blob([JSON.stringify({ version: 4, created: new Date().toISOString(), config: config(), topoEnabled: state.topoEnabled, sculptMode: state.sculptMode, brushRadius: state.brushRadius, brushStrength: state.brushStrength, rings: state.rings }, null, 2)], { type: 'application/json' })));
+  $('exportCsv').addEventListener('click', () => {
+    if (!state.field) return; const c = config(), lines = ['latitude_deg,longitude_deg,elevation_m,gravity_anomaly_mGal'];
+    for (let j = 0; j < c.ny; j++) for (let i = 0; i < c.nx; i++) { const x = -c.extentX / 2 + c.extentX * i / (c.nx - 1), y = -c.extentY / 2 + c.extentY * j / (c.ny - 1), ll = localToLatLon(x, y, c), elev = state.topoEnabled && state.topography ? state.topography.values[j * c.nx + i] : c.obsHeight; lines.push(`${ll.lat.toFixed(7)},${ll.lon.toFixed(7)},${elev.toFixed(2)},${state.field.values[j * c.nx + i].toFixed(8)}`); }
+    download('gravity-anomaly.csv', new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8' }));
+  });
+  $('exportPng').addEventListener('click', () => { const a = document.createElement('a'); a.download = 'gravity-anomaly-map.png'; a.href = fieldCanvas.toDataURL('image/png'); a.click(); });
+
+  $('density').addEventListener('input', e => { state.density = Number(e.target.value); $('densityValue').textContent = `${state.density >= 0 ? '+' : ''}${state.density} kg/m³`; requestGravity(); });
+  $('precision').addEventListener('change', () => { $('cellValue').textContent = `${precisionTable[$('precision').value].h.toFixed(2)} km`; invalidateTopo(); requestGravity(); });
+  $('ringSelect').addEventListener('change', e => { state.selectedRing = Number(e.target.value); state.selectedVertex = -1; updateRingSelect(); drawModel(); });
+  $('shrinkRing').addEventListener('click', () => scaleRing(.9)); $('growRing').addEventListener('click', () => scaleRing(1.1));
+  $('addVertex').addEventListener('click', addVertex); $('deleteVertex').addEventListener('click', deleteVertex);
+  $('addRing').addEventListener('click', addRing); $('deleteRing').addEventListener('click', deleteRing); $('undoEdit').addEventListener('click', undoEdit);
+  document.querySelectorAll('[data-sculpt]').forEach(b => b.addEventListener('click', () => { state.sculptMode = b.dataset.sculpt; document.querySelectorAll('[data-sculpt]').forEach(q => q.classList.toggle('active', q === b)); }));
+  $('brushRadius').addEventListener('input', e => { state.brushRadius = Number(e.target.value); $('brushRadiusValue').textContent = `${state.brushRadius.toFixed(2)} km`; drawModel(); });
+  $('brushStrength').addEventListener('input', e => { state.brushStrength = Number(e.target.value) / 100; $('brushStrengthValue').textContent = `${e.target.value}%`; });
+  ['X', 'Y', 'Z'].forEach(axis => {
+    const el = $(`scale${axis}`); el.dataset.last = '100';
+    el.addEventListener('pointerdown', pushHistory);
+    el.addEventListener('input', e => {
+      const next = Number(e.target.value), prev = Number(e.target.dataset.last || 100), factor = next / prev; e.target.dataset.last = String(next); $(`scale${axis}Value`).textContent = `${next}%`;
+      if (axis === 'Z') { const mid = (state.rings[0].z + state.rings[state.rings.length - 1].z) / 2; state.rings.forEach(r => r.z = mid + (r.z - mid) * factor); updateRingSelect(); }
+      else state.rings.forEach(r => r.points.forEach(p => { if (axis === 'X') p.x *= factor; else p.y *= factor; }));
+      markDirty(); drawModel(); requestGravity();
+    });
+  });
+  document.querySelectorAll('[data-preset]').forEach(b => b.addEventListener('click', () => buildPreset(b.dataset.preset)));
+  $('resetView').addEventListener('click', () => { state.yaw = -.72; state.pitch = .55; state.zoom = 1; drawModel(); });
+  $('toggleVoxels').addEventListener('click', () => { state.voxelPreview = !state.voxelPreview; $('toggleVoxels').textContent = `Voxel preview ${state.voxelPreview ? 'ON' : 'OFF'}`; drawModel(); });
+  $('rebuildVoxels').addEventListener('click', requestGravity);
+  $('loadTopo').addEventListener('click', fetchTopography);
+  $('topoToggle').addEventListener('change', e => { if (e.target.checked && !state.topography) fetchTopography(); else { state.topoEnabled = e.target.checked; $('topoState').textContent = state.topoEnabled ? 'ON · cached' : 'OFF'; drawModel(); requestGravity(); } });
+  ['bodyDepth', 'obsHeight'].forEach(id => $(id).addEventListener('change', () => { updateRingSelect(); drawModel(); requestGravity(); }));
+  ['bodyLat', 'bodyLon'].forEach(id => $(id).addEventListener('change', () => { drawModel(); if (state.topoEnabled) invalidateTopo(); requestGravity(); }));
+  ['gridLat', 'gridLon', 'extent'].forEach(id => $(id).addEventListener('change', () => { invalidateTopo(); drawModel(); requestGravity(); }));
+  document.addEventListener('keydown', e => {
+    const tag = e.target.tagName, editing = /INPUT|SELECT|TEXTAREA/.test(tag) || e.target.isContentEditable; if (editing) return;
+    const key = e.key.toLowerCase(); let handled = true;
+    if ((e.metaKey || e.ctrlKey) && key === 'z') undoEdit();
+    else if (e.shiftKey && (key === 'delete' || key === 'backspace')) deleteRing();
+    else if (key === 'delete' || key === 'backspace') deleteVertex();
+    else if (e.shiftKey && (key === 'a' || key === 'insert')) addRing();
+    else if (key === 'a' || key === 'insert') addVertex();
+    else if (key === 'r') requestGravity();
+    else if (key === 'escape') { state.selectedVertex = -1; updateSelectionControls(); drawModel(); }
+    else handled = false;
+    if (handled) e.preventDefault();
+  });
+  window.addEventListener('resize', () => { drawModel(); drawField(); });
+
+  buildPreset('diapir');
+})();
+
+  </script>
+</body>
+</html>

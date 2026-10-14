@@ -1,0 +1,96 @@
+name: Add publication draft
+
+on:
+  workflow_dispatch:
+    inputs:
+      doi:
+        description: "DOI or https://doi.org URL"
+        required: true
+        type: string
+      open_access:
+        description: "Mark the paper as open access"
+        required: true
+        default: false
+        type: boolean
+      publication_date:
+        description: "Verified YYYY-MM-DD date when Crossref provides only a year or month"
+        required: false
+        type: string
+      areas:
+        description: "Comma-separated area slugs; leave blank for title-based classification"
+        required: false
+        type: string
+      author_notes:
+        description: "Optional factual notes supplied to the summary model"
+        required: false
+        type: string
+      generate_ai_summary:
+        description: "Generate review-only metadata and a one-sentence public-note candidate when source text is available"
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  publication-draft:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Create publication Markdown
+        env:
+          DOI: ${{ inputs.doi }}
+          OPEN_ACCESS: ${{ inputs.open_access }}
+          PUBLICATION_DATE: ${{ inputs.publication_date }}
+          AREAS: ${{ inputs.areas }}
+          AUTHOR_NOTES: ${{ inputs.author_notes }}
+          GENERATE_AI_SUMMARY: ${{ inputs.generate_ai_summary }}
+          CROSSREF_MAILTO: ${{ vars.CROSSREF_MAILTO }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: ${{ vars.OPENAI_MODEL }}
+        run: |
+          args=(--doi "$DOI")
+          if [ "$OPEN_ACCESS" = "true" ]; then args+=(--open-access); fi
+          if [ -n "$PUBLICATION_DATE" ]; then args+=(--publication-date "$PUBLICATION_DATE"); fi
+          if [ -n "$AREAS" ]; then args+=(--areas "$AREAS"); fi
+          if [ "$GENERATE_AI_SUMMARY" != "true" ]; then args+=(--skip-ai); fi
+          python scripts/add_publication.py "${args[@]}"
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate Astro build
+        run: npm run build
+
+      - name: Open review pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DOI: ${{ inputs.doi }}
+        run: |
+          branch="publication-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$branch"
+          git add src/content/publications
+          git commit -m "content: add publication ${DOI}"
+          git push --set-upstream origin "$branch"
+          gh pr create \
+            --base main \
+            --head "$branch" \
+            --title "Publication draft: ${DOI}" \
+            --body "Adds Crossref metadata and validates the Astro build. Verify the exact publicationDate against the publisher page, especially when it was entered manually because Crossref supplied only a year or month. AI-generated summary metadata remains review-only while summaryStatus is draft. Verify every field against the paper or author-supplied notes, then set summaryStatus to source-checked or approved before merging. Set piCorresponding to true only when the publisher or laboratory record explicitly identifies the PI as a corresponding author. The public site uses only the first sentence of mainFindings as its concise English note; the other summary and evidence fields remain internal."

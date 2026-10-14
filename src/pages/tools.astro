@@ -1,0 +1,41 @@
+---
+import BaseLayout from "../components/BaseLayout.astro";
+import PageHeader from "../components/PageHeader.astro";
+import { withBase } from "../lib/urls";
+
+const toolUrl = withBase("/tools/gravity-forward/");
+---
+
+<BaseLayout
+  title="Tools & Teaching"
+  description="Interactive geophysics material provided by the Seismology Laboratory at Korea University."
+>
+  <PageHeader title="Tools & Teaching" />
+
+  <div class="container-page py-12">
+    <section data-floating-panel="true" data-floating-variant="3" class="layered-card glass-panel glass-panel-heavy overflow-hidden rounded-2xl border">
+      <div class="flex flex-col gap-4 border-b border-line p-6 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h2 class="font-serif text-2xl text-ink">3D Gravity Forward Modeller</h2>
+          <p class="mt-2 max-w-3xl text-sm leading-relaxed text-muted">
+            Three-dimensional gravity forward modelling with an analytical rectangular-prism kernel.
+          </p>
+        </div>
+        <a
+          href={toolUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex shrink-0 items-center rounded-md bg-primary-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-500"
+        >
+          Open full screen
+        </a>
+      </div>
+      <iframe
+        src={toolUrl}
+        title="3D Gravity Forward Modeller"
+        loading="lazy"
+        class="h-[780px] w-full border-0"
+      ></iframe>
+    </section>
+  </div>
+</BaseLayout>

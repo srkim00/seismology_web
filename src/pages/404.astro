@@ -1,0 +1,16 @@
+---
+import BaseLayout from "../components/BaseLayout.astro";
+import { withBase } from "../lib/urls";
+---
+
+<BaseLayout title="Page not found">
+  <div class="container-page flex flex-col items-center py-28 text-center">
+    <p class="font-serif text-6xl font-semibold text-primary-300">404</p>
+    <h1 class="mt-4 font-serif text-2xl text-ink">Page not found</h1>
+    <a
+      href={withBase("/")}
+      class="mt-8 rounded-md bg-primary-600 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary-500"
+      >Back to home</a
+    >
+  </div>
+</BaseLayout>

@@ -1,0 +1,193 @@
+---
+import BaseLayout from "../components/BaseLayout.astro";
+import FeaturedResearchCard from "../components/FeaturedResearchCard.astro";
+import ResearchAreaIcon from "../components/ResearchAreaIcon.astro";
+import { site } from "../data/site";
+import { tohokuWaveform } from "../data/tohokuWaveform";
+import { getPublicationNumberMap, getPublications, type AreaSlug } from "../lib/content";
+import { withBase } from "../lib/urls";
+const pubs = await getPublications();
+
+// Editorial selection ordered by current journal impact metrics. Each paper
+// has a lab student as first author or the PI as corresponding/lead author.
+const featuredRecentResearchIds = [
+  "10-1038-s41467-026-75246-8",
+  "10-1007-s10518-026-02364-5",
+  "10-1785-0220240384",
+];
+const featuredRecentResearch = featuredRecentResearchIds
+  .map((id) => pubs.find((publication) => publication.id === id))
+  .filter((publication): publication is NonNullable<typeof publication> => Boolean(publication));
+const publicationNumbers = getPublicationNumberMap(pubs);
+
+const themes: { slug: AreaSlug; title: string; href: string; body: string }[] = [
+  {
+    slug: "geodynamics-structure",
+    title: "Geodynamics and Earth structure",
+    href: "/research#geodynamics-structure",
+    body: "Back-arc and continental-margin processes, intraplate volcanism, and lithosphere-to-mantle-transition-zone structure.",
+  },
+  {
+    slug: "seismological-methods",
+    title: "Seismological methods",
+    href: "/research#seismological-methods",
+    body: "Bayesian inversion, machine learning, and seismic interferometry using diffuse wavefields.",
+  },
+  {
+    slug: "earthquake-properties",
+    title: "Earthquake properties",
+    href: "/research#earthquake-properties",
+    body: "Event detection, source-property estimation, and source mechanisms with quantitative uncertainty.",
+  },
+  {
+    slug: "earthquake-engineering",
+    title: "Earthquake engineering",
+    href: "/research#earthquake-engineering",
+    body: "Ground motion, seismic hazard, numerical simulation, and site and structural response in the Korean Peninsula.",
+  },
+  {
+    slug: "environmental-seismology",
+    title: "Environmental seismology",
+    href: "/research#environmental-seismology",
+    body: "Seismic responses associated with groundwater and other physical-property changes.",
+  },
+];
+---
+
+<BaseLayout>
+  <!-- Hero -->
+  <section class="hero-stage relative isolate overflow-hidden border-b border-line">
+    <div class="absolute inset-0 overflow-hidden" aria-hidden="true">
+      <div class="motion-layer hero-orbit hero-orbit-one"></div>
+      <div class="motion-layer hero-orbit hero-orbit-two"></div>
+      <div class="hero-waveform-window">
+        <svg
+          class="hero-waveform-track"
+          viewBox="0 0 3200 240"
+          fill="none"
+          preserveAspectRatio="none"
+          focusable="false"
+        >
+          <defs>
+            <path
+              id="tohoku-waveform"
+              d={tohokuWaveform.path}
+              vector-effect="non-scaling-stroke"
+            />
+          </defs>
+          <use href="#tohoku-waveform"></use>
+          <use href="#tohoku-waveform" x={tohokuWaveform.tileWidth}></use>
+        </svg>
+      </div>
+    </div>
+    <div class="container-page relative z-10 py-16 sm:py-20">
+      <div class="max-w-4xl text-left">
+        <p class="text-sm font-semibold tracking-wide text-muted uppercase">
+          <a
+            href={site.institutionUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="underline decoration-line underline-offset-4 transition-colors hover:text-primary-300 hover:decoration-primary-500"
+          >
+            {site.institution}
+          </a>
+          <span class="mx-1 text-accent-500" aria-hidden="true">·</span>
+          <a
+            href={site.universityUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="underline decoration-line underline-offset-4 transition-colors hover:text-primary-300 hover:decoration-primary-500"
+          >
+            {site.university}
+          </a>
+        </p>
+        <h1
+          class="mt-5 text-4xl leading-tight font-semibold text-ink sm:text-5xl lg:text-6xl"
+        >
+          {site.name}
+        </h1>
+        <p class="mt-6 max-w-2xl text-lg leading-relaxed text-muted">{site.description}</p>
+        <div class="mt-8 flex flex-wrap justify-start gap-3">
+          <a
+            href={withBase("/research")}
+            class="rounded-md bg-primary-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm shadow-black/20 transition-colors hover:bg-primary-700"
+            >Research areas</a
+          >
+          <a
+            href={withBase("/publications")}
+            class="rounded-md border border-line bg-surface/60 px-5 py-2.5 text-sm font-semibold text-ink backdrop-blur transition-colors hover:border-primary-600 hover:bg-surface"
+            >Publications</a
+          >
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured recent research -->
+  {
+    featuredRecentResearch.length > 0 && (
+      <section class="section-reveal border-b border-line bg-canvas">
+        <div class="container-page py-16 sm:py-20">
+          <div class="mb-8 flex items-end justify-between gap-4">
+            <div>
+              <div class="mb-3 h-0.5 w-10 rounded-full bg-accent-500" />
+              <h2 class="font-serif text-2xl text-ink">Featured recent research</h2>
+            </div>
+            <a
+              href={withBase("/publications")}
+              class="group inline-flex shrink-0 items-center gap-1 text-sm font-medium text-primary-300 transition-colors hover:text-primary-200"
+            >
+              All publications
+              <span
+                class="transition-transform group-hover:translate-x-0.5"
+                aria-hidden="true"
+              >
+                &rarr;
+              </span>
+            </a>
+          </div>
+          <div class="grid gap-8">
+            {featuredRecentResearch.map((publication, index) => (
+              <FeaturedResearchCard
+                publication={publication}
+                publicationNumber={publicationNumbers.get(publication.id)}
+                index={index}
+                mediaPriority={index === 0}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- Research themes -->
+  <section class="section-reveal border-b border-line bg-surface">
+    <div class="container-page py-16 sm:py-20">
+      <div class="mb-3 h-0.5 w-10 rounded-full bg-accent-500"></div>
+      <h2 class="mb-8 font-serif text-2xl text-ink">Research areas</h2>
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {
+          themes.map((t, index) => (
+            <a
+              href={withBase(t.href)}
+              data-home-area={t.slug}
+              data-floating-panel="true"
+              data-floating-variant={String((index % 3) + 1)}
+              class="layered-card glass-panel group rounded-lg border p-6"
+            >
+              <span class="mb-4 flex h-11 w-11 items-center justify-center rounded-lg border border-primary-800 bg-primary-950 text-primary-300">
+                <ResearchAreaIcon area={t.slug} class="h-6 w-6" />
+              </span>
+              <h3 class="font-serif text-xl text-ink group-hover:text-primary-300">
+                {t.title}
+              </h3>
+              <p class="mt-2 text-sm leading-relaxed text-muted">{t.body}</p>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+</BaseLayout>

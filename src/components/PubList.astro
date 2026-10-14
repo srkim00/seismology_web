@@ -1,0 +1,254 @@
+---
+import { getCollection } from "astro:content";
+import { Image } from "astro:assets";
+import type { Publication } from "../lib/content";
+import {
+  AREA_LABELS,
+  findPersonForAuthor,
+  formatPublicationDate,
+  getPublicationNumberMap,
+  getPublications,
+  publicationRoleFlags,
+} from "../lib/content";
+import { withBase } from "../lib/urls";
+import PublicationBadges from "./PublicationBadges.astro";
+import ResearchAreaIcon from "./ResearchAreaIcon.astro";
+import CitationButton from "./CitationButton.astro";
+
+interface Props {
+  pubs: Publication[];
+  listId?: string;
+}
+const { pubs, listId } = Astro.props;
+const publicationNumbers = getPublicationNumberMap(await getPublications());
+
+// Directory of lab people, for linking author names and showing lab-author markers.
+const people = await getCollection("people");
+const dir = people.map((p) => ({
+  slug: p.id,
+  name: p.data.name,
+  headshot: p.data.headshot,
+}));
+const findPerson = (author: string) => {
+  const person = findPersonForAuthor(author, people);
+  return person ? dir.find((entry) => entry.slug === person.id) ?? null : null;
+};
+// Every explicitly matched lab member on a paper, in author order. A
+// deterministic initials marker is used when a headshot is absent.
+const labPeopleFor = (p: Publication) => {
+  const seen = new Set<string>();
+  const out: typeof dir = [];
+  for (const a of p.data.authors) {
+    const d = findPerson(a);
+    if (!d || seen.has(d.slug)) continue;
+    seen.add(d.slug);
+    out.push(d);
+  }
+  return out;
+};
+
+const shortName = (name: string) => name.split(",")[0].trim();
+const initialsFor = (name: string) => {
+  const parts = shortName(name).split(/\s+/).filter(Boolean);
+  const selected = parts.length > 1 ? [parts[0], parts.at(-1)] : parts;
+  return selected
+  .map((part) => part?.[0])
+  .filter(Boolean)
+  .join("")
+  .toUpperCase();
+};
+---
+
+<ol class="divide-y divide-line" id={listId}>
+  {
+    pubs.map((p) => {
+      const d = p.data;
+      const publicationNumber = publicationNumbers.get(p.id);
+      const search = `${d.title} ${d.authors.join(" ")} ${d.journal ?? ""}`.toLowerCase();
+      const { menteeLed, collaboration } = publicationRoleFlags(p, people);
+      const featured = menteeLed || (d.piFirstOrSenior && d.year >= 2019);
+      const labPeople = labPeopleFor(p);
+      return (
+        <li
+          class="py-5"
+          data-pub
+          data-year={d.year}
+          data-publication-date={d.publicationDate}
+          data-citations={typeof d.citations === "number" ? d.citations : -1}
+          data-featured={featured}
+          data-mentee={menteeLed}
+          data-pi-corresponding={d.piCorresponding}
+          data-collaboration={collaboration}
+          data-openaccess={d.openAccess}
+          data-areas={d.areas.join(" ")}
+          data-search={search}
+          data-publication-id={p.id}
+          data-publication-number={publicationNumber}
+        >
+          <p class="font-medium text-ink">
+            {publicationNumber && (
+              <span
+                class="mr-2 inline-block min-w-8 font-mono text-sm font-semibold text-primary-300"
+                aria-label={`Publication number ${publicationNumber}`}
+              >
+                [{publicationNumber}]
+              </span>
+            )}
+            <a
+              href={withBase(`/publications/${p.id}`)}
+              class="hover:text-primary-300 hover:underline"
+            >
+              {d.title}
+            </a>
+          </p>
+
+          <p class="mt-1 text-sm text-muted">
+            <span class:list={["authors", d.authors.length > 14 && "clamped"]}>
+              {d.authors.map((a, i) => {
+                const person = findPerson(a);
+                return (
+                  <span class="au">
+                    {i > 0 && ", "}
+                    {person ? (
+                      <a
+                        href={withBase(`/people/${person.slug}`)}
+                        class="font-medium text-ink hover:text-primary-300 hover:underline"
+                      >
+                        {a}
+                      </a>
+                    ) : (
+                      a
+                    )}
+                  </span>
+                );
+              })}
+            </span>
+            {d.authors.length > 14 && (
+              <button
+                type="button"
+                data-authors-toggle
+                data-more={`… +${d.authors.length - 12} more`}
+                class="ml-1 whitespace-nowrap text-primary-300 hover:text-primary-200 hover:underline"
+              >
+                … +{d.authors.length - 12} more
+              </button>
+            )}
+          </p>
+
+          <p class="mt-0.5 text-sm text-muted">
+            {d.status === "published" && d.publicationDate ? (
+              <>
+                {d.journal && <em>{d.journal}</em>}
+                {d.journal && " · "}
+                <time datetime={d.publicationDate}>{formatPublicationDate(d.publicationDate)}</time>
+              </>
+            ) : (
+              <>
+                In preparation · <time datetime={String(d.year)}>{d.year}</time>
+              </>
+            )}
+          </p>
+
+          {d.areas.length > 0 && (
+            <ul class="mt-2 flex flex-wrap gap-1.5" aria-label="Research areas">
+              {d.areas.map((area) => (
+                <li>
+                  <a
+                    href={withBase(`/publications#${area}`)}
+                    data-publication-area-symbol={area}
+                    class="inline-flex min-h-8 max-w-full items-center gap-1.5 rounded-md border border-line px-2 py-1 text-xs leading-tight font-medium text-muted transition-colors hover:border-primary-600 hover:text-primary-300"
+                  >
+                    <ResearchAreaIcon area={area} class="h-[18px] w-[18px] shrink-0" />
+                    <span data-publication-area-name={area}>{AREA_LABELS[area]}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {labPeople.length > 0 && (
+            <ul class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1" aria-label="Laboratory authors">
+              {labPeople.map((m) => (
+                <li>
+                  <a
+                    href={withBase(`/people/${m.slug}`)}
+                    class="group flex min-h-11 items-center gap-2 rounded-md py-1 pr-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
+                    title={m.name}
+                    aria-label={`${m.name}, laboratory author`}
+                    data-lab-author
+                  >
+                    {m.headshot ? (
+                      <Image
+                        src={m.headshot}
+                        alt=""
+                        width={64}
+                        height={64}
+                        class="h-8 w-8 rounded-full object-cover ring-1 ring-line group-hover:ring-primary-600"
+                      />
+                    ) : (
+                      <span
+                        class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary-950 text-[11px] font-semibold text-primary-300 ring-1 ring-primary-800 group-hover:ring-primary-600"
+                        aria-hidden="true"
+                        data-initial-avatar
+                      >
+                        {initialsFor(m.name)}
+                      </span>
+                    )}
+                    <span class="text-xs leading-tight text-muted group-hover:text-primary-300">
+                      <span class="block">{shortName(m.name)}</span>
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          <div class="mt-2 flex flex-wrap items-center gap-2 text-xs">
+            <PublicationBadges
+              publication={p}
+              menteeLed={menteeLed}
+              collaboration={collaboration}
+            />
+            {d.doi && (
+              <a
+                href={`https://doi.org/${d.doi}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-primary-300 hover:text-primary-200 hover:underline"
+              >
+                DOI
+              </a>
+            )}
+            <CitationButton publication={p} />
+            <a href={withBase(`/publications/${p.id}`)} class="text-primary-300 hover:text-primary-200 hover:underline">
+              {d.figure ? "Figure and brief note" : "Publication record"}
+            </a>
+            {d.scholarUrl && (
+              <a
+                href={d.scholarUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-primary-300 hover:text-primary-200 hover:underline"
+              >
+                Scholar
+              </a>
+            )}
+          </div>
+
+        </li>
+      );
+    })
+  }
+</ol>
+
+<script>
+  // Expand/collapse clamped author lists.
+  document.querySelectorAll<HTMLButtonElement>("[data-authors-toggle]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const authors = btn.parentElement?.querySelector(".authors");
+      if (!authors) return;
+      const clamped = authors.classList.toggle("clamped");
+      btn.textContent = clamped ? (btn.dataset.more ?? "more") : "show fewer";
+    });
+  });
+</script>

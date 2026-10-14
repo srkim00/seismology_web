@@ -1,0 +1,660 @@
+@import "tailwindcss";
+
+/*
+  Dark scientific palette — Tailwind v4, CSS-first (@theme).
+  Cyan-blue drives the interface; Korea University crimson is reserved
+  for small brand accents. Newsreader is used for headings and Inter for body.
+*/
+@theme {
+  /* ---- Scientific cyan-blue primary ---- */
+  --color-primary-50: #f0f6f8;
+  --color-primary-100: #e0edf2;
+  --color-primary-200: #b9dfe6;
+  --color-primary-300: #82c5d2;
+  --color-primary-400: #52aabd;
+  --color-primary-500: #348ca1;
+  --color-primary-600: #2c7386;
+  --color-primary-700: #285d6d;
+  --color-primary-800: #254d59;
+  --color-primary-900: #213f49;
+  --color-primary-950: #102732;
+
+  /* ---- Korea University crimson accent ---- */
+  --color-accent-50: #fff1f3;
+  --color-accent-100: #ffe1e6;
+  --color-accent-200: #ffc7d1;
+  --color-accent-300: #f79aae;
+  --color-accent-400: #e85c78;
+  --color-accent-500: #cf3153;
+  --color-accent-600: #ad173b;
+  --color-accent-700: #8b0029;
+  --color-accent-800: #740523;
+  --color-accent-900: #600a22;
+  --color-accent-950: #37000f;
+
+  /* ---- Dark neutral surfaces ---- */
+  --color-canvas: #081520;
+  --color-surface: #0e2030;
+  --color-surface-muted: #142a3d;
+  --color-elevated: #183246;
+  --color-line: #36556a;
+  --color-ink: #f2f5f4;
+  --color-muted: #b8c7cf;
+
+  /* ---- Typography (loaded via @fontsource-variable in BaseLayout) ---- */
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-serif: "Newsreader Variable", ui-serif, Georgia, Cambria,
+    "Times New Roman", serif;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-canvas font-sans text-ink antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-serif text-ink;
+    text-wrap: balance;
+  }
+
+  /* Body-content links are colored; nav/footer style their own links. */
+  .prose-content a {
+    @apply text-primary-300 underline underline-offset-2 decoration-primary-600;
+  }
+  .prose-content a:hover {
+    @apply text-primary-200 decoration-primary-400;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-primary-300;
+  }
+}
+
+/* Reusable layout helper: centered content column. */
+@utility container-page {
+  @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
+}
+
+/* Clamp long author lists to the first 12 (toggle reveals the rest). */
+.authors.clamped .au:nth-child(n + 13) {
+  display: none;
+}
+
+/* Home-page depth layers and restrained seismological motion. */
+.hero-stage {
+  background:
+    radial-gradient(circle at 14% 18%, rgb(52 140 161 / 0.28), transparent 36rem),
+    radial-gradient(circle at 82% 28%, rgb(207 49 83 / 0.08), transparent 30rem),
+    linear-gradient(155deg, var(--color-surface-muted), var(--color-surface) 48%, var(--color-canvas));
+}
+
+.motion-layer {
+  position: absolute;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.hero-orbit {
+  border: 1px solid rgb(130 197 210 / 0.16);
+  border-radius: 9999px;
+  box-shadow: inset 0 0 80px rgb(74 126 143 / 0.08);
+}
+
+.hero-orbit-one {
+  top: -19rem;
+  left: 50%;
+  width: 56rem;
+  height: 56rem;
+  animation: orbit-drift 20s ease-in-out infinite alternate;
+}
+
+.hero-orbit-two {
+  right: -11rem;
+  bottom: -18rem;
+  width: 38rem;
+  height: 38rem;
+  border-color: rgb(207 49 83 / 0.14);
+  animation: orbit-drift-reverse 24s ease-in-out infinite alternate;
+}
+
+.hero-waveform-window {
+  position: absolute;
+  inset: auto 0 2.25rem;
+  height: clamp(9rem, 18vw, 15rem);
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0.42;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 4%,
+    black 96%,
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 4%,
+    black 96%,
+    transparent
+  );
+}
+
+.hero-waveform-track {
+  --waveform-tile-width: clamp(72rem, 100vw, 100rem);
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: calc(2 * var(--waveform-tile-width));
+  height: 100%;
+  stroke: rgb(185 223 230 / 0.9);
+  stroke-width: 1.35;
+  vector-effect: non-scaling-stroke;
+  shape-rendering: geometricPrecision;
+  animation: tohoku-waveform-flow 44s linear infinite;
+  will-change: transform;
+}
+
+.layered-card {
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.layered-card:hover {
+  transform: translateY(-2px);
+}
+
+/* Translucent scientific panels. Large figure and iframe surfaces use the
+   same glass appearance without live backdrop blur to limit repaint cost. */
+.glass-panel {
+  background-color: rgb(14 32 48 / 0.72);
+  background-image:
+    linear-gradient(125deg, rgb(242 245 244 / 0.08), transparent 28%),
+    linear-gradient(
+      145deg,
+      rgb(31 59 78 / 0.9),
+      rgb(14 32 48 / 0.86) 56%,
+      rgb(8 21 32 / 0.88)
+    );
+  border-color: rgb(130 197 210 / 0.3);
+  box-shadow:
+    inset 0 1px 0 rgb(242 245 244 / 0.12),
+    inset 0 -1px 0 rgb(8 21 32 / 0.5),
+    0 24px 58px rgb(0 0 0 / 0.34),
+    0 6px 22px rgb(52 140 161 / 0.1);
+}
+
+.glass-panel-heavy {
+  background-color: rgb(14 32 48 / 0.62);
+  background-image:
+    linear-gradient(125deg, rgb(242 245 244 / 0.09), transparent 30%),
+    linear-gradient(
+      145deg,
+      rgb(31 59 78 / 0.7),
+      rgb(14 32 48 / 0.62) 56%,
+      rgb(8 21 32 / 0.68)
+    );
+}
+
+@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .glass-panel:not(.glass-panel-heavy) {
+    background-image:
+      linear-gradient(125deg, rgb(242 245 244 / 0.1), transparent 30%),
+      linear-gradient(
+        145deg,
+        rgb(31 59 78 / 0.78),
+        rgb(14 32 48 / 0.72) 56%,
+        rgb(8 21 32 / 0.76)
+      );
+    -webkit-backdrop-filter: blur(12px) saturate(112%);
+    backdrop-filter: blur(12px) saturate(112%);
+  }
+}
+
+.glass-panel:hover {
+  border-color: rgb(130 197 210 / 0.46);
+  box-shadow:
+    inset 0 1px 0 rgb(242 245 244 / 0.16),
+    inset 0 -1px 0 rgb(8 21 32 / 0.46),
+    0 28px 66px rgb(0 0 0 / 0.38),
+    0 8px 28px rgb(52 140 161 / 0.14);
+}
+
+/* Scientific figures stay fully opaque and unfiltered. The translucent mat
+   around the white paper surface makes the panel glass visible without
+   changing figure pixels or their colour relationships. */
+.figure-glass-stage {
+  padding: clamp(0.625rem, 1.4vw, 1rem);
+  border: 1px solid rgb(185 223 230 / 0.24);
+  border-radius: 0.75rem;
+  background:
+    linear-gradient(135deg, rgb(185 223 230 / 0.14), transparent 34%),
+    rgb(8 21 32 / 0.36);
+  box-shadow:
+    inset 0 1px 0 rgb(242 245 244 / 0.1),
+    0 12px 28px rgb(0 0 0 / 0.2);
+}
+
+.figure-action:focus-visible {
+  outline: 3px solid var(--color-primary-600);
+  outline-offset: 2px;
+}
+
+.figure-paper {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #fff;
+  box-shadow:
+    0 0 0 1px rgb(8 21 32 / 0.18),
+    0 10px 24px rgb(0 0 0 / 0.22);
+}
+
+.scientific-figure-image {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  margin-inline: auto;
+  object-fit: contain;
+  opacity: 1;
+  filter: none;
+  mix-blend-mode: normal;
+  background: #fff;
+}
+
+/* One top-layer citation dialog serves every publication trigger. The source
+   page remains in place and the reference can be copied as plain or rich text. */
+.citation-dialog {
+  position: fixed;
+  inset: 0;
+  box-sizing: border-box;
+  width: min(46rem, calc(100vw - 2rem));
+  max-width: none;
+  max-height: calc(100vh - 2rem);
+  max-height: calc(100dvh - 2rem);
+  margin: auto;
+  padding: 0;
+  overflow: hidden;
+  color: var(--color-ink);
+  border: 1px solid rgb(130 197 210 / 0.4);
+  border-radius: 0.875rem;
+  background: transparent;
+  box-shadow: 0 32px 96px rgb(0 0 0 / 0.62);
+}
+
+.citation-dialog[open] {
+  display: flex;
+  flex-direction: column;
+}
+
+.citation-dialog::backdrop {
+  background: rgb(2 9 15 / 0.78);
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+}
+
+.citation-dialog-shell {
+  display: flex;
+  min-height: 0;
+  max-height: inherit;
+  flex: 1;
+  flex-direction: column;
+  overflow: hidden;
+  background:
+    linear-gradient(135deg, rgb(242 245 244 / 0.08), transparent 28%),
+    rgb(14 32 48 / 0.97);
+}
+
+.citation-dialog-body {
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  scrollbar-color: rgb(130 197 210 / 0.48) transparent;
+}
+
+.citation-dialog-footer {
+  position: relative;
+  z-index: 1;
+  flex: 0 0 auto;
+  background: rgb(11 27 41 / 0.98);
+  box-shadow: 0 -14px 28px rgb(2 9 15 / 0.2);
+}
+
+.citation-style-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+}
+
+.citation-style-option {
+  display: flex;
+  min-height: 2.75rem;
+  cursor: pointer;
+  align-items: center;
+  gap: 0.625rem;
+  border: 1px solid var(--color-line);
+  border-radius: 0.5rem;
+  padding: 0.625rem 0.75rem;
+  background: rgb(8 21 32 / 0.54);
+  color: var(--color-muted);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease;
+}
+
+.citation-style-option:hover,
+.citation-style-option:has(input:checked) {
+  border-color: var(--color-primary-500);
+  background: rgb(16 39 50 / 0.9);
+  color: var(--color-ink);
+}
+
+.citation-style-option input {
+  width: 1rem;
+  height: 1rem;
+  flex: 0 0 auto;
+  accent-color: var(--color-primary-400);
+}
+
+.citation-preview {
+  min-height: 8rem;
+  max-height: 17rem;
+  overflow: auto;
+  border: 1px solid rgb(130 197 210 / 0.28);
+  border-radius: 0.625rem;
+  padding: 1rem;
+  background: rgb(8 21 32 / 0.72);
+  color: var(--color-ink);
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+  user-select: text;
+}
+
+.citation-preview[data-code] {
+  white-space: pre-wrap;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 0.78rem;
+  line-height: 1.55;
+}
+
+.citation-preview a {
+  color: var(--color-primary-300);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.citation-copy-fallback {
+  position: fixed;
+  left: -10000px;
+  top: 0;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+html[data-citation-dialog="open"] body {
+  overflow: hidden;
+}
+
+html[data-citation-dialog="open"] [data-floating-panel="true"] {
+  animation-play-state: paused !important;
+}
+
+/* Asynchronous movement for bounded panel surfaces. Individual
+   translate/rotate properties preserve the hover transform. */
+[data-floating-panel="true"] {
+  animation: panel-float-a 10.4s cubic-bezier(0.37, 0, 0.63, 1) -1.2s infinite;
+  transform-origin: 50% 50%;
+}
+
+[data-floating-panel="true"][data-floating-variant="2"] {
+  animation-name: panel-float-b;
+  animation-duration: 11.8s;
+  animation-delay: -4.5s;
+}
+
+[data-floating-panel="true"][data-floating-variant="3"] {
+  animation-name: panel-float-c;
+  animation-duration: 13.4s;
+  animation-delay: -7.6s;
+}
+
+[data-floating-panel="true"]:focus-within {
+  animation-play-state: paused;
+}
+
+html[data-panel-motion="paused"] [data-floating-panel="true"] {
+  animation-play-state: paused !important;
+}
+
+html[data-panel-motion="paused"] .motion-layer,
+html[data-panel-motion="paused"] .hero-waveform-track {
+  animation-play-state: paused !important;
+}
+
+.section-reveal {
+  animation: section-enter 320ms both;
+  animation-timeline: view();
+  animation-range: entry 5% cover 26%;
+}
+
+@keyframes orbit-drift {
+  from { transform: translate3d(-52%, -1%, 0) rotate(-0.4deg); }
+  to { transform: translate3d(-48%, 3%, 0) rotate(0.4deg); }
+}
+
+@keyframes orbit-drift-reverse {
+  from { transform: translate3d(0, 0, 0) rotate(0.5deg); }
+  to { transform: translate3d(-2.5rem, -1.5rem, 0) rotate(-0.5deg); }
+}
+
+@keyframes tohoku-waveform-flow {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
+}
+
+@keyframes section-enter {
+  from { opacity: 0.45; transform: translateY(1.25rem); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes panel-float-a {
+  0%, 100% { translate: 0 0; rotate: -0.04deg; }
+  35% { translate: 0.8px -3.7px; rotate: 0.055deg; }
+  68% { translate: -0.65px -1.4px; rotate: -0.028deg; }
+}
+
+@keyframes panel-float-b {
+  0%, 100% { translate: 0 -0.45px; rotate: 0.04deg; }
+  38% { translate: -1px -4px; rotate: -0.06deg; }
+  72% { translate: 0.75px -1.35px; rotate: 0.026deg; }
+}
+
+@keyframes panel-float-c {
+  0%, 100% { translate: 0.35px -0.2px; rotate: -0.035deg; }
+  42% { translate: -0.85px -3.5px; rotate: 0.052deg; }
+  76% { translate: 0.65px -1.1px; rotate: -0.024deg; }
+}
+
+@keyframes panel-float-mobile {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -1px; }
+}
+
+@media (max-width: 639px), (hover: none) {
+  [data-floating-panel="true"],
+  [data-floating-panel="true"][data-floating-variant="2"],
+  [data-floating-panel="true"][data-floating-variant="3"] {
+    animation-name: panel-float-mobile;
+    animation-duration: 14s;
+    rotate: none;
+  }
+
+  .glass-panel:not(.glass-panel-heavy) {
+    -webkit-backdrop-filter: blur(8px) saturate(108%);
+    backdrop-filter: blur(8px) saturate(108%);
+  }
+
+  .figure-glass-stage {
+    padding: 0.625rem;
+  }
+}
+
+@media (min-width: 360px) {
+  .citation-style-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-height: 700px) {
+  .citation-dialog header {
+    padding-block: 0.5rem;
+  }
+
+  .citation-dialog-body {
+    padding-block: 0.75rem;
+  }
+
+  .citation-dialog-body #citation-dialog-description {
+    display: none;
+  }
+
+  .citation-dialog-body [data-citation-title] {
+    margin-top: 0;
+  }
+
+  .citation-style-fieldset,
+  .citation-preview-section {
+    margin-top: 0.75rem;
+  }
+
+  .citation-style-grid,
+  .citation-preview {
+    margin-top: 0.375rem;
+  }
+
+  .citation-style-option {
+    min-height: 2.25rem;
+    padding-block: 0.375rem;
+  }
+
+  .citation-preview {
+    min-height: 6rem;
+    max-height: 10rem;
+  }
+
+  .citation-dialog-footer {
+    padding-block: 0.625rem;
+  }
+
+  .citation-dialog-footer > p {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .glass-panel,
+  .glass-panel:not(.glass-panel-heavy) {
+    background: var(--color-surface);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+
+  .figure-glass-stage {
+    background: var(--color-surface-muted);
+  }
+
+  .citation-dialog-shell,
+  .citation-style-option,
+  .citation-preview {
+    background: var(--color-surface);
+  }
+
+  .citation-dialog::backdrop {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .glass-panel {
+    border: 1px solid CanvasText;
+    background: Canvas;
+    color: CanvasText;
+    box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+
+  .figure-paper,
+  .scientific-figure-image {
+    forced-color-adjust: none;
+  }
+
+  .citation-dialog,
+  .citation-dialog-shell,
+  .citation-style-option,
+  .citation-preview {
+    border-color: CanvasText;
+    background: Canvas;
+    color: CanvasText;
+    box-shadow: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .motion-layer,
+  .layered-card:hover {
+    transform: none !important;
+  }
+
+  [data-floating-panel="true"] {
+    animation: none !important;
+    translate: none !important;
+    rotate: none !important;
+  }
+
+  .hero-waveform-track {
+    animation: none !important;
+    transform: translate3d(0, 0, 0) !important;
+  }
+}

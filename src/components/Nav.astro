@@ -1,0 +1,216 @@
+---
+import { site } from "../data/site";
+import { withBase } from "../lib/urls";
+
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
+const pathname = basePath && Astro.url.pathname.startsWith(basePath)
+  ? Astro.url.pathname.slice(basePath.length) || "/"
+  : Astro.url.pathname;
+const isActive = (href: string) =>
+  href === "/"
+    ? pathname === "/"
+    : pathname === href || pathname.startsWith(href + "/");
+
+const linkClass = (href: string, mobile = false) => {
+  const active = isActive(href);
+  const inactive = "text-muted hover:text-primary-300 hover:bg-elevated";
+  if (mobile)
+    return active
+      ? "border-l-2 border-accent-500 bg-primary-950 text-primary-200"
+      : inactive;
+  return active
+    ? "relative text-primary-200 after:absolute after:inset-x-3 after:bottom-1 after:h-0.5 after:rounded-full after:bg-accent-500"
+    : inactive;
+};
+---
+
+<header
+  class="sticky top-0 z-40 border-b border-line bg-canvas/90 shadow-sm shadow-black/10 backdrop-blur-md supports-[backdrop-filter]:bg-canvas/80"
+>
+  <nav
+    class="container-page flex h-16 items-center justify-between"
+    aria-label="Primary"
+  >
+    <a href={withBase("/")} class="group flex items-center gap-2.5">
+      <img
+        src={withBase("/favicon.svg")}
+        alt=""
+        width="32"
+        height="32"
+        class="h-8 w-8 rounded-lg"
+      />
+      <span
+        class="font-serif text-lg font-semibold text-ink group-hover:text-primary-300"
+      >
+        {site.shortName}
+      </span>
+    </a>
+
+    <div class="flex items-center gap-1">
+      <!-- Desktop links -->
+      <ul class="hidden items-center gap-1 md:flex">
+        {
+          site.nav.map((item) => (
+            <li>
+              <a
+                href={withBase(item.href)}
+                aria-current={isActive(item.href) ? "page" : undefined}
+                class:list={[
+                  "rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                  linkClass(item.href),
+                ]}
+              >
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+
+      <button
+        type="button"
+        data-panel-motion-toggle
+        aria-pressed="false"
+        aria-label="Pause motion"
+        title="Pause motion"
+        class="inline-flex h-9 items-center justify-center gap-1.5 rounded-md border border-transparent px-2 text-muted transition-colors hover:border-line hover:bg-elevated hover:text-primary-300 disabled:cursor-not-allowed disabled:opacity-60"
+      >
+        <svg class="motion-icon-pause h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M7 5.5A1.5 1.5 0 0 1 8.5 4h1A1.5 1.5 0 0 1 11 5.5v13A1.5 1.5 0 0 1 9.5 20h-1A1.5 1.5 0 0 1 7 18.5v-13ZM13 5.5A1.5 1.5 0 0 1 14.5 4h1A1.5 1.5 0 0 1 17 5.5v13a1.5 1.5 0 0 1-1.5 1.5h-1a1.5 1.5 0 0 1-1.5-1.5v-13Z" />
+        </svg>
+        <svg class="motion-icon-play hidden h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M7.5 5.35a1.5 1.5 0 0 1 2.28-1.28l9.1 5.65a1.5 1.5 0 0 1 0 2.56l-9.1 5.65A1.5 1.5 0 0 1 7.5 16.65V5.35Z" />
+        </svg>
+        <span class="motion-toggle-label hidden text-xs font-medium xl:inline">Pause motion</span>
+      </button>
+
+      <!-- Mobile navigation toggle -->
+      <button
+        type="button"
+        id="nav-toggle"
+        class="inline-flex items-center justify-center rounded-md p-2 text-muted hover:bg-elevated md:hidden"
+        aria-controls="mobile-menu"
+        aria-expanded="false"
+      >
+        <span class="sr-only">Toggle navigation menu</span>
+        <svg
+          class="nav-icon-open h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          aria-hidden="true"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5"></path>
+        </svg>
+        <svg
+          class="nav-icon-close h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          aria-hidden="true"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile menu -->
+  <div
+    id="mobile-menu"
+    class="hidden border-t border-line bg-surface md:hidden"
+  >
+    <ul class="container-page space-y-1 py-3">
+      {
+        site.nav.map((item) => (
+          <li>
+            <a
+              href={withBase(item.href)}
+              aria-current={isActive(item.href) ? "page" : undefined}
+              class:list={[
+                "block rounded-md px-3 py-2 text-base font-medium transition-colors",
+                linkClass(item.href, true),
+              ]}
+            >
+              {item.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</header>
+
+<script>
+  const toggle = document.getElementById("nav-toggle");
+  const menu = document.getElementById("mobile-menu");
+  toggle?.addEventListener("click", () => {
+    const open = toggle.getAttribute("aria-expanded") === "true";
+    toggle.setAttribute("aria-expanded", String(!open));
+    menu?.classList.toggle("hidden");
+  });
+
+  const motionToggle = document.querySelector<HTMLButtonElement>("[data-panel-motion-toggle]");
+  const motionLabel = motionToggle?.querySelector<HTMLElement>(".motion-toggle-label");
+  const pauseIcon = motionToggle?.querySelector<HTMLElement>(".motion-icon-pause");
+  const playIcon = motionToggle?.querySelector<HTMLElement>(".motion-icon-play");
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const motionStorageKey = "seismology-panel-motion";
+  let userPaused = false;
+
+  try {
+    userPaused = window.localStorage.getItem(motionStorageKey) === "paused";
+  } catch {
+    userPaused = false;
+  }
+
+  const updateMotionState = () => {
+    const systemReduced = reducedMotion.matches;
+    const paused = systemReduced || userPaused;
+    document.documentElement.dataset.panelMotion = paused ? "paused" : "running";
+    motionToggle?.setAttribute("aria-pressed", String(paused));
+    if (motionToggle) motionToggle.disabled = systemReduced;
+
+    const label = systemReduced
+      ? "Motion disabled by system setting"
+      : paused
+        ? "Resume motion"
+        : "Pause motion";
+    motionToggle?.setAttribute("aria-label", label);
+    motionToggle?.setAttribute("title", label);
+    if (motionLabel) motionLabel.textContent = systemReduced ? "Motion reduced" : paused ? "Resume motion" : "Pause motion";
+    pauseIcon?.classList.toggle("hidden", paused);
+    playIcon?.classList.toggle("hidden", !paused);
+  };
+
+  motionToggle?.addEventListener("click", () => {
+    if (reducedMotion.matches) return;
+    userPaused = !userPaused;
+    try {
+      window.localStorage.setItem(motionStorageKey, userPaused ? "paused" : "running");
+    } catch {
+      // Motion control remains active for this page even if storage is unavailable.
+    }
+    updateMotionState();
+  });
+
+  reducedMotion.addEventListener("change", updateMotionState);
+  updateMotionState();
+</script>
+
+<style>
+  #nav-toggle .nav-icon-close {
+    display: none;
+  }
+  #nav-toggle[aria-expanded="true"] .nav-icon-open {
+    display: none;
+  }
+  #nav-toggle[aria-expanded="true"] .nav-icon-close {
+    display: block;
+  }
+</style>

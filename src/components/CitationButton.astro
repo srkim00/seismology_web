@@ -1,0 +1,38 @@
+---
+import type { Publication } from "../lib/content";
+import { getCitationPayload } from "../lib/citations";
+import { withBase } from "../lib/urls";
+
+interface Props {
+  publication: Publication;
+  variant?: "link" | "pill";
+  label?: string;
+}
+
+const { publication, variant = "link", label = "Cite" } = Astro.props;
+const payload = getCitationPayload(publication);
+const href = `${withBase(`/publications/${publication.id}`)}#citation`;
+const className = variant === "pill"
+  ? "inline-flex min-h-9 items-center gap-1.5 rounded-full border border-line bg-surface px-3 py-1.5 font-medium text-ink transition-colors hover:border-primary-600 hover:text-primary-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
+  : "inline-flex min-h-8 items-center gap-1 font-medium text-primary-300 hover:text-primary-200 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas";
+---
+
+{
+  payload && (
+    <a
+      href={href}
+      class={className}
+      data-citation-trigger
+      data-citation-payload={JSON.stringify(payload)}
+      aria-haspopup="dialog"
+      aria-controls="citation-dialog"
+      aria-label={`Open citation formats for ${publication.data.title}`}
+    >
+      <svg viewBox="0 0 24 24" class="h-3.5 w-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+        <rect x="8" y="8" width="11" height="11" rx="2" />
+        <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" />
+      </svg>
+      <span>{label}</span>
+    </a>
+  )
+}
