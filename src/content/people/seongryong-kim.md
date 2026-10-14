@@ -9,8 +9,9 @@ affiliation: "Associate Professor, Department of Earth and Environmental Science
 publicationNames: ["Seongryong Kim"]
 links:
   email: "seongryongkim@korea.ac.kr"
+  cv: "/cv/Seongryong-Kim-CV.pdf"
   institutional: "https://pure.korea.ac.kr/en/persons/seongryong-kim/"
-  scholar: "https://scholar.korea.ac.kr/researcher/0f283671-c6af-4d06-9978-dfd3d98d2dfa/item"
+  scholar: "https://scholar.google.co.kr/citations?hl=ko&user=uNx-PRQAAAAJ"
   orcid: "https://orcid.org/0000-0003-2990-0718"
   researchgate: "https://www.researchgate.net/profile/Seongryong-Kim"
 identifierStatus: "verified"

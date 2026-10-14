@@ -92,6 +92,7 @@ for (const { name, text } of published) {
   const volume = scalar(text, "volume");
   const issue = scalar(text, "issue");
   const locator = scalar(text, "locator");
+  const onlineFirst = scalar(text, "onlineFirst");
   const piCorresponding = scalar(text, "piCorresponding");
   const piCorrespondingSource = scalar(text, "piCorrespondingSource");
   const status = scalar(text, "summaryStatus");
@@ -119,9 +120,14 @@ for (const { name, text } of published) {
       assert(validOrcidChecksum(author.orcid), `${name}: citationAuthors[${index}].orcid checksum failed`);
     }
   }
-  assert(volume.length > 0, `${name}: volume is required for a published reference`);
-  assert(locator.length > 0, `${name}: locator is required for a published reference`);
-  if (/^issue:/m.test(text)) assert(issue.length > 0, `${name}: issue must not be empty when present`);
+  assert(["", "true", "false"].includes(onlineFirst), `${name}: invalid onlineFirst value`);
+  if (onlineFirst === "true") {
+    assert(!volume && !issue && !locator, `${name}: online-first record must omit unassigned issue metadata`);
+  } else {
+    assert(volume.length > 0, `${name}: volume is required for an issued reference`);
+    assert(locator.length > 0, `${name}: locator is required for an issued reference`);
+    if (/^issue:/m.test(text)) assert(issue.length > 0, `${name}: issue must not be empty when present`);
+  }
   assert(["", "true", "false"].includes(piCorresponding), `${name}: invalid piCorresponding value`);
   if (piCorresponding === "true") {
     assert(Array.isArray(authors) && authors.some((author) => normalizeAuthor(author) === "seongryong kim"), `${name}: PI corresponding flag requires Seongryong Kim in the author list`);
@@ -262,12 +268,21 @@ for (const { name, text } of publications) {
 }
 
 assert(existsSync(join(root, "public/tools/gravity-forward/index.html")), "Gravity tool is missing");
-for (const route of ["cv", "photos", "figures", "lab-life"]) {
+for (const route of ["photos", "figures", "lab-life"]) {
   assert(!existsSync(join(root, `src/pages/${route}.astro`)), `Hidden or excluded route is present: ${route}`);
   if (existsSync(join(root, "dist"))) {
     assert(!existsSync(join(root, `dist/${route}`)), `Excluded route was built: ${route}`);
   }
 }
+assert(!existsSync(join(root, "src/pages/cv.astro")), "A hidden CV page must not be restored");
+if (existsSync(join(root, "dist"))) {
+  assert(!existsSync(join(root, "dist/cv/index.html")), "A hidden CV page was built");
+}
+const cvPath = join(root, "public/cv/Seongryong-Kim-CV.pdf");
+assert(existsSync(cvPath), "Public CV PDF is missing");
+assert(readFileSync(cvPath).subarray(0, 5).toString() === "%PDF-", "Public CV asset is not a PDF");
+const piProfile = people.find(({ name }) => name === "seongryong-kim.md");
+assert(scalar(piProfile?.text ?? "", "cv", "  ") === "/cv/Seongryong-Kim-CV.pdf", "PI profile CV link is missing or invalid");
 
 console.log(
   `Content checks passed: ${publicationFiles.length} publications (${published.length} published, ${dois.length} DOI, ` +

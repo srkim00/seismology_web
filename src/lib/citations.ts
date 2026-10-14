@@ -191,6 +191,7 @@ export function getCitationFormats(publication: Publication): CitationFormat[] {
   const authors = data.citationAuthors as CitationAuthor[];
   const journal = data.journal ?? "";
   const shortJournal = JOURNAL_ABBREVIATIONS[journal] ?? journal;
+  const citationTitle = data.citationTitle ?? data.title;
   const volume = data.volume ?? "";
   const issue = data.issue ?? "";
   const locator = data.locator ?? "";
@@ -198,43 +199,46 @@ export function getCitationFormats(publication: Publication): CitationFormat[] {
   const doi = doiUrl(data.doi);
 
   const aguBibliography = [volIssue, locator].filter(Boolean).join(", ");
-  const aguPlain = `${aguAuthors(authors)} (${data.year}). ${titleWithStop(data.title)} ${journal}${aguBibliography ? `, ${aguBibliography}` : ""}.${doi ? ` ${doi}` : ""}`;
+  const aguOnlineFirst = data.onlineFirst ? " Advance online publication." : "";
+  const aguPlain = `${aguAuthors(authors)} (${data.year}). ${titleWithStop(citationTitle)} ${journal}${aguBibliography ? `, ${aguBibliography}` : ""}.${aguOnlineFirst}${doi ? ` ${doi}` : ""}`;
   const aguRichVolume = volume ? `<em>${escapeHtml(volume)}</em>${issue ? `(${escapeHtml(issue)})` : ""}` : "";
   const aguRichBibliography = [aguRichVolume, locator ? escapeHtml(locator) : ""].filter(Boolean).join(", ");
-  const aguHtml = `${richAuthors(aguAuthors(authors))} (${data.year}). ${escapeHtml(titleWithStop(data.title))} <em>${escapeHtml(journal)}</em>${aguRichBibliography ? `, ${aguRichBibliography}` : ""}.${doi ? ` <a href="${escapeHtml(doi)}">${escapeHtml(doi)}</a>` : ""}`;
+  const aguHtml = `${richAuthors(aguAuthors(authors))} (${data.year}). ${escapeHtml(titleWithStop(citationTitle))} <em>${escapeHtml(journal)}</em>${aguRichBibliography ? `, ${aguRichBibliography}` : ""}.${aguOnlineFirst}${doi ? ` <a href="${escapeHtml(doi)}">${escapeHtml(doi)}</a>` : ""}`;
 
   // GJI's current examples omit issue numbers and express an available DOI as
   // `doi:...`; keep the resolver URL only in the rich-text hyperlink target.
   const gjiBibliography = [volume, locator].filter(Boolean).join(", ");
   const gjiDoi = data.doi ? `doi:${data.doi}` : "";
-  const gjiPlain = `${gjiAuthors(authors)}, ${data.year}. ${titleWithComma(data.title)} ${shortJournal}${gjiBibliography ? `, ${gjiBibliography}` : ""}${gjiDoi ? `, ${gjiDoi}` : ""}.`;
-  const gjiHtml = `${richAuthors(gjiAuthors(authors))}, ${data.year}. ${escapeHtml(titleWithComma(data.title))} <em>${escapeHtml(shortJournal)}</em>${gjiBibliography ? `, ${escapeHtml(gjiBibliography)}` : ""}${gjiDoi ? `, <a href="${escapeHtml(doi)}">${escapeHtml(gjiDoi)}</a>` : ""}.`;
+  const gjiPlain = `${gjiAuthors(authors)}, ${data.year}. ${titleWithComma(citationTitle)} ${shortJournal}${gjiBibliography ? `, ${gjiBibliography}` : ""}${gjiDoi ? `, ${gjiDoi}` : ""}.`;
+  const gjiHtml = `${richAuthors(gjiAuthors(authors))}, ${data.year}. ${escapeHtml(titleWithComma(citationTitle))} <em>${escapeHtml(shortJournal)}</em>${gjiBibliography ? `, ${escapeHtml(gjiBibliography)}` : ""}${gjiDoi ? `, <a href="${escapeHtml(doi)}">${escapeHtml(gjiDoi)}</a>` : ""}.`;
 
   const ssaVolume = volume ? ` ${volume}` : "";
   const ssaIssue = issue ? `, no. ${issue}` : "";
   const ssaLocator = locator ? `, ${locator}` : "";
-  const ssaPlain = `${ssaAuthors(authors)} (${data.year}). ${titleWithComma(data.title)} ${shortJournal}${ssaVolume}${ssaIssue}${ssaLocator}${data.doi ? `, doi: ${data.doi}` : ""}.`;
-  const ssaHtml = `${richAuthors(ssaAuthors(authors))} (${data.year}). ${escapeHtml(titleWithComma(data.title))} <em>${escapeHtml(shortJournal)}</em>${volume ? ` <strong>${escapeHtml(volume)}</strong>` : ""}${ssaIssue ? escapeHtml(ssaIssue) : ""}${ssaLocator ? escapeHtml(ssaLocator) : ""}${data.doi ? `, doi: <a href="${escapeHtml(doi)}">${escapeHtml(data.doi)}</a>` : ""}.`;
+  const ssaPlain = `${ssaAuthors(authors)} (${data.year}). ${titleWithComma(citationTitle)} ${shortJournal}${ssaVolume}${ssaIssue}${ssaLocator}${data.doi ? `, doi: ${data.doi}` : ""}.`;
+  const ssaHtml = `${richAuthors(ssaAuthors(authors))} (${data.year}). ${escapeHtml(titleWithComma(citationTitle))} <em>${escapeHtml(shortJournal)}</em>${volume ? ` <strong>${escapeHtml(volume)}</strong>` : ""}${ssaIssue ? escapeHtml(ssaIssue) : ""}${ssaLocator ? escapeHtml(ssaLocator) : ""}${data.doi ? `, doi: <a href="${escapeHtml(doi)}">${escapeHtml(data.doi)}</a>` : ""}.`;
 
   const natureBibliography = [volume, locator].filter(Boolean).join(", ");
   const natureWebOnly = !natureBibliography && doi ? ` ${doi}` : "";
-  const naturePlain = `${natureAuthors(authors)} ${titleWithStop(data.title)} ${shortJournal}${natureBibliography ? ` ${natureBibliography}` : natureWebOnly} (${data.year}).`;
-  const natureHtml = `${richAuthors(natureAuthors(authors))} ${escapeHtml(titleWithStop(data.title))} <em>${escapeHtml(shortJournal)}</em>${volume ? ` <strong>${escapeHtml(volume)}</strong>` : ""}${locator ? `, ${escapeHtml(locator)}` : ""}${natureWebOnly ? ` <a href="${escapeHtml(doi)}">${escapeHtml(doi)}</a>` : ""} (${data.year}).`;
+  const naturePlain = `${natureAuthors(authors)} ${titleWithStop(citationTitle)} ${shortJournal}${natureBibliography ? ` ${natureBibliography}` : natureWebOnly} (${data.year}).`;
+  const natureHtml = `${richAuthors(natureAuthors(authors))} ${escapeHtml(titleWithStop(citationTitle))} <em>${escapeHtml(shortJournal)}</em>${volume ? ` <strong>${escapeHtml(volume)}</strong>` : ""}${locator ? `, ${escapeHtml(locator)}` : ""}${natureWebOnly ? ` <a href="${escapeHtml(doi)}">${escapeHtml(doi)}</a>` : ""} (${data.year}).`;
 
   const elsevierBibliography = [volIssue, locator].filter(Boolean).join(", ");
-  const elsevierPlain = `${elsevierAuthors(authors)}, ${data.year}. ${titleWithStop(data.title)} ${shortJournal}${elsevierBibliography ? ` ${elsevierBibliography}` : ""}.${doi ? ` ${doi}` : ""}`;
-  const elsevierHtml = `${richAuthors(elsevierAuthors(authors))}, ${data.year}. ${escapeHtml(titleWithStop(data.title))} <em>${escapeHtml(shortJournal)}</em>${elsevierBibliography ? ` ${escapeHtml(elsevierBibliography)}` : ""}.${doi ? ` <a href="${escapeHtml(doi)}">${escapeHtml(doi)}</a>` : ""}`;
+  const elsevierStop = elsevierBibliography || !shortJournal.endsWith(".") ? "." : "";
+  const elsevierPlain = `${elsevierAuthors(authors)}, ${data.year}. ${titleWithStop(citationTitle)} ${shortJournal}${elsevierBibliography ? ` ${elsevierBibliography}` : ""}${elsevierStop}${doi ? ` ${doi}` : ""}`;
+  const elsevierHtml = `${richAuthors(elsevierAuthors(authors))}, ${data.year}. ${escapeHtml(titleWithStop(citationTitle))} <em>${escapeHtml(shortJournal)}</em>${elsevierBibliography ? ` ${escapeHtml(elsevierBibliography)}` : ""}${elsevierStop}${doi ? ` <a href="${escapeHtml(doi)}">${escapeHtml(doi)}</a>` : ""}`;
 
   const springerBibliography = volume
     ? ` ${volume}${issue ? `(${issue})` : ""}${locator ? `:${locator}` : ""}`
     : "";
-  const springerPlain = `${springerAuthors(authors)} (${data.year}) ${titleWithStop(data.title)} ${shortJournal}${springerBibliography}.${doi ? ` ${doi}` : ""}`;
-  const springerHtml = `${richAuthors(springerAuthors(authors))} (${data.year}) ${escapeHtml(titleWithStop(data.title))} <em>${escapeHtml(shortJournal)}</em>${springerBibliography ? ` ${escapeHtml(springerBibliography.trim())}` : ""}.${doi ? ` <a href="${escapeHtml(doi)}">${escapeHtml(doi)}</a>` : ""}`;
+  const springerStop = springerBibliography || !shortJournal.endsWith(".") ? "." : "";
+  const springerPlain = `${springerAuthors(authors)} (${data.year}) ${titleWithStop(citationTitle)} ${shortJournal}${springerBibliography}${springerStop}${doi ? ` ${doi}` : ""}`;
+  const springerHtml = `${richAuthors(springerAuthors(authors))} (${data.year}) ${escapeHtml(titleWithStop(citationTitle))} <em>${escapeHtml(shortJournal)}</em>${springerBibliography ? ` ${escapeHtml(springerBibliography.trim())}` : ""}${springerStop}${doi ? ` <a href="${escapeHtml(doi)}">${escapeHtml(doi)}</a>` : ""}`;
 
   const bibtexLines = [
-    `@article{${bibtexKey(authors[0]?.family ?? "article", data.year, data.title)},`,
+    `@article{${bibtexKey(authors[0]?.family ?? "article", data.year, citationTitle)},`,
     `  author = {${bibtexValue(authors.map((author) => `${author.given} ${author.family}`.trim()).join(" and "))}},`,
-    `  title = {${bibtexValue(data.title)}},`,
+    `  title = {${bibtexValue(citationTitle)}},`,
     `  journal = {${bibtexValue(journal)}},`,
     `  year = {${data.year}},`,
     ...(volume ? [`  volume = {${bibtexValue(volume)}},`] : []),

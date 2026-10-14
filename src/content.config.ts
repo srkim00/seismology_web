@@ -47,6 +47,10 @@ const people = defineCollection({
           institutional: z.url().optional(),
           researchgate: z.url().optional(),
           github: z.url().optional(),
+          cv: z
+            .string()
+            .regex(/^\/[A-Za-z0-9/_-]+\.pdf$/i, "CV must be a root-relative PDF path")
+            .optional(),
         })
         .default({}),
       identifierStatus: z
@@ -66,6 +70,9 @@ const people = defineCollection({
 const publicationSchema = z
   .object({
     title: z.string(),
+    // Optional reference-list casing. The display title remains exactly as
+    // supplied by the publisher.
+    citationTitle: z.string().optional(),
     authors: z.array(z.string()),
     // Structured names are retained separately from the public display form so
     // journal-specific reference styles can place surnames and initials safely.
@@ -102,6 +109,10 @@ const publicationSchema = z
     featured: z.boolean().default(false),
     openAccess: z.boolean().default(false),
     status: z.enum(["published", "in-preparation"]).default("published"),
+    // A published-online article whose volume, issue, and locator have not yet
+    // been assigned by the journal. Replace this flag with issued metadata once
+    // those fields become available.
+    onlineFirst: z.boolean().default(false),
     fullCitation: z.string().optional(),
     summaryEn: z.string().optional(),
     summaryKo: z.string().optional(),
@@ -195,6 +206,23 @@ const publicationSchema = z
         code: "custom",
         path: ["publicationDate"],
         message: "In-preparation records must not contain a publication date",
+      });
+    }
+    if (publication.onlineFirst && publication.status !== "published") {
+      context.addIssue({
+        code: "custom",
+        path: ["onlineFirst"],
+        message: "Only published records can be marked online-first",
+      });
+    }
+    if (
+      publication.onlineFirst &&
+      (publication.volume || publication.issue || publication.locator)
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["onlineFirst"],
+        message: "Online-first records must not contain unassigned issue metadata",
       });
     }
     if (

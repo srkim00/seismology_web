@@ -90,10 +90,12 @@ export async function getGroupedPeople() {
   })).filter((g) => g.people.length > 0);
 }
 
-// Publication numbers retain the established bibliographic-year chronology.
-// Exact publication dates are displayed separately and do not renumber papers.
+// Publication numbers follow the publisher-verified calendar date so that new
+// papers append to the sequence in their actual publication order.
 const byPublicationChronology = (a: Publication, b: Publication) =>
-  a.data.year - b.data.year ||
+  (a.data.publicationDate ?? `${a.data.year}-12-31`).localeCompare(
+    b.data.publicationDate ?? `${b.data.year}-12-31`,
+  ) ||
   a.data.title.localeCompare(b.data.title, "en") ||
   a.id.localeCompare(b.id, "en");
 

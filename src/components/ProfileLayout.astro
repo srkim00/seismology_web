@@ -40,9 +40,11 @@ type LinkType =
   | "researchgate"
   | "github"
   | "twitter"
-  | "linkedin";
+  | "linkedin"
+  | "cv";
 const linkItems = [
   links.email && { type: "email", label: links.email, href: `mailto:${links.email}` },
+  links.cv && { type: "cv", label: "Download CV (PDF)", href: withBase(links.cv), download: "Seongryong-Kim-CV.pdf" },
   links.institutional && { type: "institutional", label: "Institutional profile", href: links.institutional },
   links.website && { type: "website", label: "Website", href: links.website },
   links.scholar && { type: "scholar", label: "Scholar profile", href: links.scholar },
@@ -51,7 +53,7 @@ const linkItems = [
   links.github && { type: "github", label: "GitHub", href: links.github },
   links.twitter && { type: "twitter", label: "X / Twitter", href: links.twitter },
   links.linkedin && { type: "linkedin", label: "LinkedIn", href: links.linkedin },
-].filter(Boolean) as { type: LinkType; label: string; href: string }[];
+].filter(Boolean) as { type: LinkType; label: string; href: string; download?: string }[];
 
 // Brand glyphs (single-path simple-icons silhouettes). ORCID/LinkedIn/Scholar/X
 // carry their brand color; email/website inherit the link text color.
@@ -88,6 +90,9 @@ const ICONS: Record<LinkType, { d: string; color?: string }> = {
   linkedin: {
     d: "M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z",
     color: "#0A66C2",
+  },
+  cv: {
+    d: "M7 2h8l5 5v15H7V2Zm8 1.5V8h3.5L15 3.5ZM10 11v1.5h7V11h-7Zm0 4v1.5h7V15h-7Zm0 4v1.5h5V19h-5Z",
   },
 };
 ---
@@ -133,8 +138,9 @@ const ICONS: Record<LinkType, { d: string; color?: string }> = {
                   <li>
                     <a
                       href={l.href}
-                      target={l.href.startsWith("mailto:") ? undefined : "_blank"}
-                      rel="noopener noreferrer"
+                      target={l.href.startsWith("mailto:") || l.download ? undefined : "_blank"}
+                      rel={l.href.startsWith("mailto:") || l.download ? undefined : "noopener noreferrer"}
+                      download={l.download}
                       class="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-3 py-1.5 text-xs font-medium text-primary-300 transition-colors hover:border-primary-600 hover:bg-primary-950"
                       title={l.label}
                       aria-label={l.label}
