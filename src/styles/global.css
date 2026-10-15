@@ -90,23 +90,33 @@
   display: none;
 }
 
-/* Home-page depth layers and restrained seismological motion. */
-.hero-stage {
+/* A single, stationary spacecraft-image layer spans the homepage behind
+   all content. Only the lower content surfaces darken it; the hero stays clear. */
+.planetary-page {
+  position: relative;
+  isolation: isolate;
+}
+
+.planetary-background {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  /* The fixed stacking context supplies its own base for screen blending,
+     so the source photographs' black margins do not form visible halos. */
   background:
     radial-gradient(ellipse at 22% 36%, rgb(38 72 90 / 0.28), transparent 70%),
     linear-gradient(125deg, #0c1c28, #091721 60%, #07131d);
 }
 
-.hero-background,
-.hero-planetary-images,
-.hero-background-shade {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  pointer-events: none;
+.planetary-page > main,
+.planetary-page > footer {
+  position: relative;
+  z-index: 1;
 }
 
-.hero-planet {
+.planetary-image {
   position: absolute;
   display: block;
   max-width: none;
@@ -117,62 +127,107 @@
   user-select: none;
 }
 
-/* Real spacecraft imagery. The Earth disk extends beyond the right edge;
-   the left-hand Moon and Mars are intentionally unequal and asymmetric. */
-.hero-planet-earth {
-  --earth-size: clamp(68rem, 110vw, 104rem);
-  top: 54%;
-  right: calc(var(--earth-size) * -0.72);
+/* Preserve the observed ocean/land colors and coastline detail. */
+.planetary-earth {
+  --earth-size: clamp(100rem, 140vw, 160rem);
+  top: 49%;
+  right: calc(var(--earth-size) * -0.66);
   width: var(--earth-size);
-  opacity: 0.48;
-  filter: saturate(0.12) brightness(0.88) blur(3px);
-  transform: translateY(-50%) rotate(-12deg);
+  opacity: 0.72;
+  filter: saturate(0.95) brightness(1.08) contrast(1.06) blur(0.6px);
+  transform: translateY(-50%);
 }
 
-.hero-planet-moon {
-  top: -2.5rem;
-  left: clamp(-2.5rem, 1vw, 2rem);
-  width: clamp(10rem, 16vw, 16rem);
-  opacity: 0.24;
-  filter: saturate(0) brightness(0.8) blur(2.5px);
+.planetary-moon {
+  top: 5rem;
+  left: -3.5rem;
+  width: clamp(18rem, 27vw, 32rem);
+  opacity: 0.46;
+  filter: brightness(1.02) blur(0.7px);
   transform: rotate(-18deg);
 }
 
-.hero-planet-mars {
-  bottom: -3rem;
-  left: 28%;
-  width: clamp(16rem, 25vw, 25rem);
-  opacity: 0.28;
-  filter: saturate(0.14) brightness(0.78) blur(3.5px);
+.planetary-mars {
+  top: 48%;
+  left: 13%;
+  width: clamp(28rem, 44vw, 48rem);
+  opacity: 0.44;
+  filter: saturate(0.72) brightness(1.02) blur(0.9px);
   transform: rotate(18deg);
+}
+
+.hero-background,
+.hero-background-shade {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
 }
 
 .hero-background-shade {
   background:
-    linear-gradient(90deg, rgb(8 21 32 / 0.12), rgb(8 21 32 / 0.3) 52%, transparent 82%),
-    linear-gradient(0deg, rgb(8 21 32 / 0.7), transparent 26%, transparent 82%, rgb(8 21 32 / 0.12));
+    linear-gradient(90deg, rgb(8 21 32 / 0.25), rgb(8 21 32 / 0.1) 48%, transparent 80%),
+    linear-gradient(0deg, rgb(8 21 32 / 0.42), transparent 22%, transparent 88%, rgb(8 21 32 / 0.08));
+}
+
+.hero-description {
+  color: #d6e0e5;
+  text-shadow: 0 1px 4px rgb(4 12 20 / 0.7);
+}
+
+.home-secondary-content {
+  background: linear-gradient(
+    to bottom,
+    rgb(8 21 32 / 0.42),
+    rgb(8 21 32 / 0.76) 18rem,
+    rgb(8 21 32 / 0.76)
+  );
+}
+
+.home-research-areas {
+  background: rgb(14 32 48 / 0.2);
+}
+
+.planetary-page > footer {
+  margin-top: 0;
+  padding-top: 5rem;
+  background: rgb(14 32 48 / 0.82);
+}
+
+@media (min-width: 640px) and (max-width: 1023px) {
+  .planetary-earth {
+    opacity: 0.62;
+  }
+
+  .hero-background-shade {
+    background: linear-gradient(90deg, rgb(8 21 32 / 0.42), rgb(8 21 32 / 0.38));
+  }
 }
 
 @media (max-width: 639px) {
-  .hero-planet-earth {
-    --earth-size: 55rem;
-    right: calc(var(--earth-size) * -0.75);
-    top: 53%;
-    opacity: 0.34;
+  .planetary-earth {
+    --earth-size: 70rem;
+    right: calc(var(--earth-size) * -0.69);
+    top: 48%;
+    opacity: 0.62;
   }
 
-  .hero-planet-moon {
-    top: -1.75rem;
-    left: -2.75rem;
-    width: 10rem;
-    opacity: 0.2;
+  .planetary-moon {
+    top: 5.25rem;
+    left: -4.5rem;
+    width: 14rem;
+    opacity: 0.4;
   }
 
-  .hero-planet-mars {
-    left: 4%;
-    bottom: -5rem;
-    width: 15rem;
-    opacity: 0.19;
+  .planetary-mars {
+    left: -12%;
+    top: 52%;
+    width: 23rem;
+    opacity: 0.36;
+  }
+
+  .hero-background-shade {
+    background: linear-gradient(90deg, rgb(8 21 32 / 0.4), rgb(8 21 32 / 0.32));
   }
 }
 

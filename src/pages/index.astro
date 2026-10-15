@@ -55,39 +55,41 @@ const themes: { slug: AreaSlug; title: string; href: string; body: string }[] = 
 ---
 
 <BaseLayout>
+  <!-- One fixed background layer remains behind the entire homepage. -->
+  <div slot="background" class="planetary-background" aria-hidden="true">
+    <img
+      class="planetary-image planetary-earth"
+      src={withBase("/backgrounds/earth-dscovr-epic.webp")}
+      width="1800"
+      height="1800"
+      alt=""
+      decoding="async"
+      fetchpriority="high"
+      draggable="false"
+    />
+    <img
+      class="planetary-image planetary-moon"
+      src={withBase("/backgrounds/moon-lro.webp")}
+      width="600"
+      height="600"
+      alt=""
+      decoding="async"
+      draggable="false"
+    />
+    <img
+      class="planetary-image planetary-mars"
+      src={withBase("/backgrounds/mars-viking.webp")}
+      width="900"
+      height="900"
+      alt=""
+      decoding="async"
+      draggable="false"
+    />
+  </div>
+
   <!-- Hero -->
   <section class="hero-stage relative isolate overflow-hidden border-b border-line">
     <div class="hero-background" aria-hidden="true">
-      <div class="hero-planetary-images">
-        <img
-          class="hero-planet hero-planet-earth"
-          src={withBase("/backgrounds/earth-dscovr-epic.webp")}
-          width="1800"
-          height="1800"
-          alt=""
-          decoding="async"
-          fetchpriority="high"
-          draggable="false"
-        />
-        <img
-          class="hero-planet hero-planet-moon"
-          src={withBase("/backgrounds/moon-lro.webp")}
-          width="600"
-          height="600"
-          alt=""
-          decoding="async"
-          draggable="false"
-        />
-        <img
-          class="hero-planet hero-planet-mars"
-          src={withBase("/backgrounds/mars-viking.webp")}
-          width="900"
-          height="900"
-          alt=""
-          decoding="async"
-          draggable="false"
-        />
-      </div>
       <div class="hero-background-shade"></div>
       <div class="hero-waveform-window">
         <svg
@@ -135,7 +137,7 @@ const themes: { slug: AreaSlug; title: string; href: string; body: string }[] = 
         >
           {site.name}
         </h1>
-        <p class="mt-6 max-w-2xl text-lg leading-relaxed text-muted">{site.description}</p>
+        <p class="hero-description mt-6 max-w-2xl text-lg leading-relaxed">{site.description}</p>
         <div class="mt-8 flex flex-wrap justify-start gap-3">
           <a
             href={withBase("/research")}
@@ -152,10 +154,11 @@ const themes: { slug: AreaSlug; title: string; href: string; body: string }[] = 
     </div>
   </section>
 
+  <div class="home-secondary-content">
   <!-- Featured recent research -->
   {
     featuredRecentResearch.length > 0 && (
-      <section class="section-reveal border-b border-line bg-canvas">
+      <section class="section-reveal border-b border-line">
         <div class="container-page py-16 sm:py-20">
           <div class="mb-8 flex items-end justify-between gap-4">
             <div>
@@ -191,7 +194,7 @@ const themes: { slug: AreaSlug; title: string; href: string; body: string }[] = 
   }
 
   <!-- Research themes -->
-  <section class="section-reveal border-b border-line bg-surface">
+  <section class="home-research-areas section-reveal border-b border-line">
     <div class="container-page py-16 sm:py-20">
       <div class="mb-3 h-0.5 w-10 rounded-full bg-accent-500"></div>
       <h2 class="mb-8 font-serif text-2xl text-ink">Research areas</h2>
@@ -218,5 +221,6 @@ const themes: { slug: AreaSlug; title: string; href: string; body: string }[] = 
       </div>
     </div>
   </section>
+  </div>
 
 </BaseLayout>
