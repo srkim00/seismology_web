@@ -57,9 +57,38 @@ const themes: { slug: AreaSlug; title: string; href: string; body: string }[] = 
 <BaseLayout>
   <!-- Hero -->
   <section class="hero-stage relative isolate overflow-hidden border-b border-line">
-    <div class="absolute inset-0 overflow-hidden" aria-hidden="true">
-      <div class="motion-layer hero-orbit hero-orbit-one"></div>
-      <div class="motion-layer hero-orbit hero-orbit-two"></div>
+    <div class="hero-background" aria-hidden="true">
+      <div class="hero-planetary-images">
+        <img
+          class="hero-planet hero-planet-earth"
+          src={withBase("/backgrounds/earth-dscovr-epic.webp")}
+          width="1800"
+          height="1800"
+          alt=""
+          decoding="async"
+          fetchpriority="high"
+          draggable="false"
+        />
+        <img
+          class="hero-planet hero-planet-moon"
+          src={withBase("/backgrounds/moon-lro.webp")}
+          width="600"
+          height="600"
+          alt=""
+          decoding="async"
+          draggable="false"
+        />
+        <img
+          class="hero-planet hero-planet-mars"
+          src={withBase("/backgrounds/mars-viking.webp")}
+          width="900"
+          height="900"
+          alt=""
+          decoding="async"
+          draggable="false"
+        />
+      </div>
+      <div class="hero-background-shade"></div>
       <div class="hero-waveform-window">
         <svg
           class="hero-waveform-track"

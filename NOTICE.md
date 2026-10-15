@@ -16,6 +16,16 @@ The PI curriculum vitae at `public/cv/Seongryong-Kim-CV.pdf` is provided for per
 
 The public people dataset contains 22 laboratory profiles, including 7 profiles with verified ORCID identifiers. Names, publication aliases, and identifiers are connected only when supported by explicit evidence. Similar names are not assumed to represent the same person. The non-laboratory mathematics faculty member named Donghun Lee is not included as a laboratory profile, and his publication author name is not assigned to KIGAM-affiliated Dong Hun Lee. Internal identifier-review status, dates, notes, and evidence sources are retained in the content records but are not rendered on public people pages. Publication author markers do not distinguish current from former members; a profile without a photograph is shown with initials only.
 
+## Homepage planetary imagery
+
+The homepage uses spacecraft observations, not AI-generated planetary images:
+
+- `public/backgrounds/earth-dscovr-epic.webp`: NASA/NOAA DSCOVR EPIC natural-color image `epic_1b_20150706051132`, from [6 July 2015](https://epic.gsfc.nasa.gov/?date=2015-07-06). The observation metadata gives 05:01:32 UTC and a disk center of 19.108887 degrees N, 112.668457 degrees E. [Source PNG](https://epic.gsfc.nasa.gov/archive/natural/2015/07/06/png/epic_1b_20150706051132.png). The color image combines successive filter exposures of the observed Earth disk; it is not a rendered globe.
+- `public/backgrounds/moon-lro.webp`: [Nearside Spectacular, PIA14011](https://science.nasa.gov/photojournal/nearside-spectacular/), credit NASA/GSFC/Arizona State University. This is an observation mosaic of approximately 1,300 LRO Wide Angle Camera images acquired in December 2010.
+- `public/backgrounds/mars-viking.webp`: [Mars Planet Globe](https://science.nasa.gov/resource/mars-planet-globe/), credit NASA/JPL-Caltech. This perspective-projected observation mosaic contains 102 Viking Orbiter images and shows Valles Marineris and Tharsis.
+
+The files are resized WebP derivatives. CSS applies blur, reduced saturation and opacity, and viewport clipping for a decorative background. The relative sizes and positions are a page composition, not an astronomical scale diagram. Source credits are retained here in accordance with [NASA image and media guidelines](https://www.nasa.gov/nasa-brand-center/images-and-media/); the template's MIT License does not relicense these images or imply NASA endorsement.
+
 ## Observed waveform
 
 The Home hero trace is derived from the 2011 Tohoku-Oki earthquake record `IU.INCN.00.BHZ`, acquired for 05:45–06:30 UTC on 11 March 2011 through the NSF NGF/EarthScope FDSN data service. The source contains 54,000 vertical-component samples at 20 Hz in raw instrument counts. For the display path, the full-record mean was removed, a 2.5% cosine taper was applied at each edge to close the visual loop, the series was reduced with a 760-bin min–max envelope, and the display amplitude was normalized. These operations produce a background visualization and do not convert the record to physical ground-motion units.

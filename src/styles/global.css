@@ -93,38 +93,87 @@
 /* Home-page depth layers and restrained seismological motion. */
 .hero-stage {
   background:
-    radial-gradient(circle at 14% 18%, rgb(52 140 161 / 0.28), transparent 36rem),
-    radial-gradient(circle at 82% 28%, rgb(207 49 83 / 0.08), transparent 30rem),
-    linear-gradient(155deg, var(--color-surface-muted), var(--color-surface) 48%, var(--color-canvas));
+    radial-gradient(ellipse at 22% 36%, rgb(38 72 90 / 0.28), transparent 70%),
+    linear-gradient(125deg, #0c1c28, #091721 60%, #07131d);
 }
 
-.motion-layer {
+.hero-background,
+.hero-planetary-images,
+.hero-background-shade {
   position: absolute;
+  inset: 0;
+  overflow: hidden;
   pointer-events: none;
-  will-change: transform;
 }
 
-.hero-orbit {
-  border: 1px solid rgb(130 197 210 / 0.16);
-  border-radius: 9999px;
-  box-shadow: inset 0 0 80px rgb(74 126 143 / 0.08);
+.hero-planet {
+  position: absolute;
+  display: block;
+  max-width: none;
+  height: auto;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  mix-blend-mode: screen;
+  user-select: none;
 }
 
-.hero-orbit-one {
-  top: -19rem;
-  left: 50%;
-  width: 56rem;
-  height: 56rem;
-  animation: orbit-drift 20s ease-in-out infinite alternate;
+/* Real spacecraft imagery. The Earth disk extends beyond the right edge;
+   the left-hand Moon and Mars are intentionally unequal and asymmetric. */
+.hero-planet-earth {
+  --earth-size: clamp(68rem, 110vw, 104rem);
+  top: 54%;
+  right: calc(var(--earth-size) * -0.72);
+  width: var(--earth-size);
+  opacity: 0.48;
+  filter: saturate(0.12) brightness(0.88) blur(3px);
+  transform: translateY(-50%) rotate(-12deg);
 }
 
-.hero-orbit-two {
-  right: -11rem;
-  bottom: -18rem;
-  width: 38rem;
-  height: 38rem;
-  border-color: rgb(207 49 83 / 0.14);
-  animation: orbit-drift-reverse 24s ease-in-out infinite alternate;
+.hero-planet-moon {
+  top: -2.5rem;
+  left: clamp(-2.5rem, 1vw, 2rem);
+  width: clamp(10rem, 16vw, 16rem);
+  opacity: 0.24;
+  filter: saturate(0) brightness(0.8) blur(2.5px);
+  transform: rotate(-18deg);
+}
+
+.hero-planet-mars {
+  bottom: -3rem;
+  left: 28%;
+  width: clamp(16rem, 25vw, 25rem);
+  opacity: 0.28;
+  filter: saturate(0.14) brightness(0.78) blur(3.5px);
+  transform: rotate(18deg);
+}
+
+.hero-background-shade {
+  background:
+    linear-gradient(90deg, rgb(8 21 32 / 0.12), rgb(8 21 32 / 0.3) 52%, transparent 82%),
+    linear-gradient(0deg, rgb(8 21 32 / 0.7), transparent 26%, transparent 82%, rgb(8 21 32 / 0.12));
+}
+
+@media (max-width: 639px) {
+  .hero-planet-earth {
+    --earth-size: 55rem;
+    right: calc(var(--earth-size) * -0.75);
+    top: 53%;
+    opacity: 0.34;
+  }
+
+  .hero-planet-moon {
+    top: -1.75rem;
+    left: -2.75rem;
+    width: 10rem;
+    opacity: 0.2;
+  }
+
+  .hero-planet-mars {
+    left: 4%;
+    bottom: -5rem;
+    width: 15rem;
+    opacity: 0.19;
+  }
 }
 
 .hero-waveform-window {
@@ -133,7 +182,7 @@
   height: clamp(9rem, 18vw, 15rem);
   overflow: hidden;
   pointer-events: none;
-  opacity: 0.42;
+  opacity: 0.3;
   -webkit-mask-image: linear-gradient(
     to right,
     transparent,
@@ -450,7 +499,6 @@ html[data-panel-motion="paused"] [data-floating-panel="true"] {
   animation-play-state: paused !important;
 }
 
-html[data-panel-motion="paused"] .motion-layer,
 html[data-panel-motion="paused"] .hero-waveform-track {
   animation-play-state: paused !important;
 }
@@ -459,16 +507,6 @@ html[data-panel-motion="paused"] .hero-waveform-track {
   animation: section-enter 320ms both;
   animation-timeline: view();
   animation-range: entry 5% cover 26%;
-}
-
-@keyframes orbit-drift {
-  from { transform: translate3d(-52%, -1%, 0) rotate(-0.4deg); }
-  to { transform: translate3d(-48%, 3%, 0) rotate(0.4deg); }
-}
-
-@keyframes orbit-drift-reverse {
-  from { transform: translate3d(0, 0, 0) rotate(0.5deg); }
-  to { transform: translate3d(-2.5rem, -1.5rem, 0) rotate(-0.5deg); }
 }
 
 @keyframes tohoku-waveform-flow {
@@ -641,7 +679,6 @@ html[data-panel-motion="paused"] .hero-waveform-track {
     scroll-behavior: auto !important;
   }
 
-  .motion-layer,
   .layered-card:hover {
     transform: none !important;
   }
