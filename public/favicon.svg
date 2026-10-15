@@ -1,4 +1,19 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Seismology Lab logo">
-  <rect width="64" height="64" rx="14" fill="#8b0029"/>
-  <path d="M8 34h10l4-10 6 22 6-29 6 22 5-10 4 5h7" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <defs>
+    <clipPath id="mark-boundary" clipPathUnits="userSpaceOnUse">
+      <rect width="64" height="64" rx="14"/>
+    </clipPath>
+    <clipPath id="globe" clipPathUnits="userSpaceOnUse">
+      <circle cx="58" cy="32" r="32"/>
+    </clipPath>
+    <path id="wave" d="M8 34h10l4-10 6 22 6-29 6 22 5-10 4 5h7"/>
+  </defs>
+  <g clip-path="url(#mark-boundary)">
+    <rect width="64" height="64" fill="#8b0029"/>
+    <circle cx="58" cy="32" r="32" fill="#fff"/>
+    <g fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+      <use href="#wave" stroke="#fff"/>
+      <use href="#wave" stroke="#8b0029" clip-path="url(#globe)"/>
+    </g>
+  </g>
 </svg>
