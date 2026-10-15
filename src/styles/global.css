@@ -125,8 +125,8 @@
   height: 108%;
   object-fit: cover;
   object-position: center;
-  opacity: 0.18;
-  filter: saturate(0.35) brightness(0.82) blur(4px);
+  opacity: 0.3;
+  filter: saturate(0.45) brightness(1.25) contrast(1.12) blur(2px);
   mix-blend-mode: screen;
   transform: rotate(-12deg) scale(1.2);
   user-select: none;
@@ -222,6 +222,10 @@
 }
 
 @media (max-width: 639px) {
+  .milky-way-background {
+    opacity: 0.26;
+  }
+
   .planetary-earth {
     --earth-size: 70rem;
     right: calc(var(--earth-size) * -0.69);
