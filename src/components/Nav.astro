@@ -67,6 +67,7 @@ const linkClass = (href: string, mobile = false) => {
         }
       </ul>
 
+      {pathname !== "/" && (
       <button
         type="button"
         data-panel-motion-toggle
@@ -83,6 +84,7 @@ const linkClass = (href: string, mobile = false) => {
         </svg>
         <span class="motion-toggle-label hidden text-xs font-medium xl:inline">Pause motion</span>
       </button>
+      )}
 
       <!-- Mobile navigation toggle -->
       <button
