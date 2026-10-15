@@ -67,25 +67,6 @@ const linkClass = (href: string, mobile = false) => {
         }
       </ul>
 
-      {pathname !== "/" && (
-      <button
-        type="button"
-        data-panel-motion-toggle
-        aria-pressed="false"
-        aria-label="Pause motion"
-        title="Pause motion"
-        class="inline-flex h-9 items-center justify-center gap-1.5 rounded-md border border-transparent px-2 text-muted transition-colors hover:border-line hover:bg-elevated hover:text-primary-300 disabled:cursor-not-allowed disabled:opacity-60"
-      >
-        <svg class="motion-icon-pause h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <path d="M7 5.5A1.5 1.5 0 0 1 8.5 4h1A1.5 1.5 0 0 1 11 5.5v13A1.5 1.5 0 0 1 9.5 20h-1A1.5 1.5 0 0 1 7 18.5v-13ZM13 5.5A1.5 1.5 0 0 1 14.5 4h1A1.5 1.5 0 0 1 17 5.5v13a1.5 1.5 0 0 1-1.5 1.5h-1a1.5 1.5 0 0 1-1.5-1.5v-13Z" />
-        </svg>
-        <svg class="motion-icon-play hidden h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <path d="M7.5 5.35a1.5 1.5 0 0 1 2.28-1.28l9.1 5.65a1.5 1.5 0 0 1 0 2.56l-9.1 5.65A1.5 1.5 0 0 1 7.5 16.65V5.35Z" />
-        </svg>
-        <span class="motion-toggle-label hidden text-xs font-medium xl:inline">Pause motion</span>
-      </button>
-      )}
-
       <!-- Mobile navigation toggle -->
       <button
         type="button"
@@ -157,10 +138,6 @@ const linkClass = (href: string, mobile = false) => {
     menu?.classList.toggle("hidden");
   });
 
-  const motionToggle = document.querySelector<HTMLButtonElement>("[data-panel-motion-toggle]");
-  const motionLabel = motionToggle?.querySelector<HTMLElement>(".motion-toggle-label");
-  const pauseIcon = motionToggle?.querySelector<HTMLElement>(".motion-icon-pause");
-  const playIcon = motionToggle?.querySelector<HTMLElement>(".motion-icon-play");
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   const motionStorageKey = "seismology-panel-motion";
   let userPaused = false;
@@ -172,34 +149,9 @@ const linkClass = (href: string, mobile = false) => {
   }
 
   const updateMotionState = () => {
-    const systemReduced = reducedMotion.matches;
-    const paused = systemReduced || userPaused;
+    const paused = reducedMotion.matches || userPaused;
     document.documentElement.dataset.panelMotion = paused ? "paused" : "running";
-    motionToggle?.setAttribute("aria-pressed", String(paused));
-    if (motionToggle) motionToggle.disabled = systemReduced;
-
-    const label = systemReduced
-      ? "Motion disabled by system setting"
-      : paused
-        ? "Resume motion"
-        : "Pause motion";
-    motionToggle?.setAttribute("aria-label", label);
-    motionToggle?.setAttribute("title", label);
-    if (motionLabel) motionLabel.textContent = systemReduced ? "Motion reduced" : paused ? "Resume motion" : "Pause motion";
-    pauseIcon?.classList.toggle("hidden", paused);
-    playIcon?.classList.toggle("hidden", !paused);
   };
-
-  motionToggle?.addEventListener("click", () => {
-    if (reducedMotion.matches) return;
-    userPaused = !userPaused;
-    try {
-      window.localStorage.setItem(motionStorageKey, userPaused ? "paused" : "running");
-    } catch {
-      // Motion control remains active for this page even if storage is unavailable.
-    }
-    updateMotionState();
-  });
 
   reducedMotion.addEventListener("change", updateMotionState);
   updateMotionState();
