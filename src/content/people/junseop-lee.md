@@ -2,10 +2,10 @@
 name: "Junseop Lee"
 status: current
 group: Students
-role: "Undergraduate Intern"
+role: "M.S. Student"
 title: "March 2026–present"
 headshot: ../../assets/people/junseop-lee.jpg
-affiliation: "Undergraduate intern, Seismology Laboratory, Korea University"
+affiliation: "Seismology Laboratory, Department of Earth and Environmental Sciences, Korea University"
 publicationNames: []
 identifierStatus: "not-found"
 identifierCheckedAt: "2026-10-15"

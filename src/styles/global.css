@@ -90,7 +90,7 @@
   display: none;
 }
 
-/* A single, stationary spacecraft-image layer spans the homepage behind
+/* A single, stationary astronomical-image layer spans the homepage behind
    all content. Only the lower content surfaces darken it; the hero stays clear. */
 .planetary-page {
   position: relative;
@@ -116,8 +116,25 @@
   z-index: 1;
 }
 
+.milky-way-background {
+  position: absolute;
+  inset: -4%;
+  z-index: 0;
+  width: 108%;
+  max-width: none;
+  height: 108%;
+  object-fit: cover;
+  object-position: center;
+  opacity: 0.18;
+  filter: saturate(0.35) brightness(0.82) blur(4px);
+  mix-blend-mode: screen;
+  transform: rotate(-12deg) scale(1.2);
+  user-select: none;
+}
+
 .planetary-image {
   position: absolute;
+  z-index: 1;
   display: block;
   max-width: none;
   height: auto;

@@ -38,7 +38,9 @@ const { title, description, image } = Astro.props;
     <main id="main" class="flex-1">
       <slot />
     </main>
-    <Footer />
+    <Footer>
+      <slot name="image-credit" />
+    </Footer>
     <CitationDialog />
   </body>
 </html>

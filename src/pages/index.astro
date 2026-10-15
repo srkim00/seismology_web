@@ -58,6 +58,16 @@ const themes: { slug: AreaSlug; title: string; href: string; body: string }[] = 
   <!-- One fixed background layer remains behind the entire homepage. -->
   <div slot="background" class="planetary-background" aria-hidden="true">
     <img
+      class="milky-way-background"
+      src={withBase("/backgrounds/milky-way-eso.webp")}
+      width="1920"
+      height="960"
+      alt=""
+      decoding="async"
+      fetchpriority="low"
+      draggable="false"
+    />
+    <img
       class="planetary-image planetary-earth"
       src={withBase("/backgrounds/earth-dscovr-epic.webp")}
       width="1800"
@@ -86,6 +96,13 @@ const themes: { slug: AreaSlug; title: string; href: string; body: string }[] = 
       draggable="false"
     />
   </div>
+
+  <p slot="image-credit" class="mt-2 leading-relaxed">
+    Milky Way:
+    <a href="https://www.eso.org/public/images/eso0932a/" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2 hover:text-ink">ESO/S. Brunier</a>
+    · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2 hover:text-ink">CC BY 4.0</a>
+    · resized and softened for background.
+  </p>
 
   <!-- Hero -->
   <section class="hero-stage relative isolate overflow-hidden border-b border-line">
