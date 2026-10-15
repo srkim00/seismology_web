@@ -90,8 +90,8 @@
   display: none;
 }
 
-/* A single, stationary astronomical-image layer spans the homepage behind
-   all content. Only the lower content surfaces darken it; the hero stays clear. */
+/* Shared astronomical background. Home retains its clear hero; content
+   pages add a separate dark veil and softer images behind readable text. */
 .planetary-page {
   position: relative;
   isolation: isolate;
@@ -206,9 +206,40 @@
 }
 
 .planetary-page > footer {
+  background: rgb(14 32 48 / 0.82);
+}
+
+.planetary-home > footer {
   margin-top: 0;
   padding-top: 5rem;
-  background: rgb(14 32 48 / 0.82);
+}
+
+.planetary-reading .planetary-background::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: rgb(8 21 32 / 0.62);
+}
+
+.planetary-reading .milky-way-background {
+  filter: saturate(0.4) brightness(1.15) contrast(1.08) blur(4px);
+}
+
+.planetary-reading .planetary-earth {
+  filter: saturate(0.85) brightness(0.98) contrast(1.03) blur(3px);
+}
+
+.planetary-reading .planetary-moon {
+  filter: brightness(0.95) blur(3.5px);
+}
+
+.planetary-reading .planetary-mars {
+  filter: saturate(0.65) brightness(0.95) blur(3.5px);
+}
+
+.planetary-reading .page-heading {
+  background: linear-gradient(to bottom, rgb(20 42 61 / 0.24), rgb(8 21 32 / 0.08));
 }
 
 @media (min-width: 640px) and (max-width: 1023px) {

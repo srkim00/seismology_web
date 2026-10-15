@@ -97,8 +97,8 @@ const ICONS: Record<LinkType, { d: string; color?: string }> = {
 };
 ---
 
-<BaseLayout title={name} description={`${role} — ${name}`}>
-  <header class="border-b border-line bg-gradient-to-b from-surface-muted to-canvas">
+<BaseLayout title={name} description={`${role} — ${name}`} background="reading">
+  <header class="page-heading border-b border-line bg-gradient-to-b from-surface-muted to-canvas">
     <div class="container-page py-10">
       <a
         href={withBase("/people")}

@@ -35,9 +35,9 @@ const figureLabel = d.figure?.number && (/^Figure \d+$/i.test(d.figure.number) |
   : "representative figure";
 ---
 
-<BaseLayout title={d.title} description={pageDescription}>
+<BaseLayout title={d.title} description={pageDescription} background="reading">
   <article data-publication-number={publicationNumber}>
-    <header class="border-b border-line bg-gradient-to-b from-surface-muted to-canvas">
+    <header class="page-heading border-b border-line bg-gradient-to-b from-surface-muted to-canvas">
       <div class="container-page py-10 sm:py-14">
         <a href={withBase("/publications")} class="text-sm font-medium text-primary-300 hover:text-primary-200 hover:underline">
           &larr; All publications

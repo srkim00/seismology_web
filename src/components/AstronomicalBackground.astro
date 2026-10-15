@@ -1,0 +1,50 @@
+---
+import { withBase } from "../lib/urls";
+
+interface Props {
+  priority?: "high" | "low" | "auto";
+}
+
+const { priority = "low" } = Astro.props;
+---
+
+<div class="planetary-background" aria-hidden="true">
+  <img
+    class="milky-way-background"
+    src={withBase("/backgrounds/milky-way-eso.webp")}
+    width="1920"
+    height="960"
+    alt=""
+    decoding="async"
+    fetchpriority="low"
+    draggable="false"
+  />
+  <img
+    class="planetary-image planetary-earth"
+    src={withBase("/backgrounds/earth-dscovr-epic.webp")}
+    width="1800"
+    height="1800"
+    alt=""
+    decoding="async"
+    fetchpriority={priority}
+    draggable="false"
+  />
+  <img
+    class="planetary-image planetary-moon"
+    src={withBase("/backgrounds/moon-lro.webp")}
+    width="600"
+    height="600"
+    alt=""
+    decoding="async"
+    draggable="false"
+  />
+  <img
+    class="planetary-image planetary-mars"
+    src={withBase("/backgrounds/mars-viking.webp")}
+    width="900"
+    height="900"
+    alt=""
+    decoding="async"
+    draggable="false"
+  />
+</div>

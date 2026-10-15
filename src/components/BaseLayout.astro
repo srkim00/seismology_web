@@ -6,14 +6,17 @@ import SEO from "./SEO.astro";
 import Nav from "./Nav.astro";
 import Footer from "./Footer.astro";
 import CitationDialog from "./CitationDialog.astro";
+import AstronomicalBackground from "./AstronomicalBackground.astro";
+import BackgroundCredit from "./BackgroundCredit.astro";
 
 interface Props {
   title?: string;
   description?: string;
   image?: string;
+  background?: "home" | "reading";
 }
 
-const { title, description, image } = Astro.props;
+const { title, description, image, background } = Astro.props;
 ---
 
 <!doctype html>
@@ -24,10 +27,14 @@ const { title, description, image } = Astro.props;
   <body
     class:list={[
       "flex min-h-screen flex-col",
-      { "planetary-page": Astro.slots.has("background") },
+      {
+        "planetary-page": Boolean(background),
+        "planetary-home": background === "home",
+        "planetary-reading": background === "reading",
+      },
     ]}
   >
-    <slot name="background" />
+    {background && <AstronomicalBackground priority={background === "home" ? "high" : "low"} />}
     <a
       href="#main"
       class="sr-only rounded-md bg-primary-600 px-4 py-2 text-white focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50"
@@ -39,7 +46,7 @@ const { title, description, image } = Astro.props;
       <slot />
     </main>
     <Footer>
-      <slot name="image-credit" />
+      {background && <BackgroundCredit />}
     </Footer>
     <CitationDialog />
   </body>
