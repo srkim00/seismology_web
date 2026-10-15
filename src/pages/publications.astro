@@ -73,7 +73,7 @@ const filters = [
         <button class={chip} data-area="all" data-active>All areas</button>
         {
           areaChips.map((slug) => (
-            <button class={chip} data-area={slug}>
+            <button class={`${chip} research-area-tag`} data-area={slug} data-research-theme={slug}>
               <ResearchAreaIcon area={slug} class="h-4 w-4" />
               {AREA_LABELS[slug]}{" "}
               <span class="opacity-70">({areaCounts[slug] ?? 0})</span>

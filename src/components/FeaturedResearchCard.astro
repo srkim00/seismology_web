@@ -126,7 +126,8 @@ const { menteeLed, collaboration } = publicationRoleFlags(publication, people);
               href={withBase(`/publications#${area}`)}
               aria-label={AREA_LABELS[area]}
               title={AREA_LABELS[area]}
-              class="flex h-8 w-8 items-center justify-center rounded-md border border-line text-muted transition-colors hover:border-primary-600 hover:text-primary-300"
+              data-research-theme={area}
+              class="research-area-tag flex h-8 w-8 items-center justify-center rounded-md border transition-colors"
             >
               <ResearchAreaIcon area={area} class="h-4.5 w-4.5" />
             </a>

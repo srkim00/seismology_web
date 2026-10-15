@@ -90,8 +90,9 @@ const figureLabel = d.figure?.number && (/^Figure \d+$/i.test(d.figure.number) |
           {d.areas.map((area) => (
             <a
               href={withBase(`/publications#${area}`)}
-              class="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-3 py-1.5 text-muted hover:border-primary-700 hover:bg-elevated hover:text-primary-300"
+              class="research-area-tag inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5"
               data-research-area-link={area}
+              data-research-theme={area}
             >
               <ResearchAreaIcon area={area} class="h-4 w-4" />
               {AREA_LABELS[area]}

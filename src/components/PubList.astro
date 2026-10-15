@@ -156,7 +156,8 @@ const initialsFor = (name: string) => {
                   <a
                     href={withBase(`/publications#${area}`)}
                     data-publication-area-symbol={area}
-                    class="inline-flex min-h-8 max-w-full items-center gap-1.5 rounded-md border border-line px-2 py-1 text-xs leading-tight font-medium text-muted transition-colors hover:border-primary-600 hover:text-primary-300"
+                    data-research-theme={area}
+                    class="research-area-tag inline-flex min-h-8 max-w-full items-center gap-1.5 rounded-md border px-2 py-1 text-xs leading-tight font-medium transition-colors"
                   >
                     <ResearchAreaIcon area={area} class="h-[18px] w-[18px] shrink-0" />
                     <span data-publication-area-name={area}>{AREA_LABELS[area]}</span>

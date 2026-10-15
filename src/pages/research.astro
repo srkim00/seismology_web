@@ -23,20 +23,27 @@ const groups = await getResearchGroups(4);
         <section>
           <div class="mb-3 h-1 w-12 rounded-full bg-accent-500"></div>
           <h2 class="font-serif text-3xl font-semibold tracking-tight text-ink sm:text-4xl">{group.title}</h2>
-          <div class="mt-8 space-y-12">
-            {group.areas.map((area) => (
-              <div id={area.slug} class="scroll-mt-24">
+          <div class="mt-8 space-y-10 sm:space-y-12">
+            {group.areas.map((area, index) => (
+              <section
+                id={area.slug}
+                aria-labelledby={`${area.slug}-heading`}
+                data-research-theme={area.slug}
+                data-floating-panel="true"
+                data-floating-variant={String((index % 3) + 1)}
+                class="research-area-panel layered-card glass-panel glass-panel-heavy scroll-mt-24 rounded-2xl border p-5 sm:p-8"
+              >
                 <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
                   <div class="flex items-center gap-3">
-                    <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-primary-800 bg-primary-950 text-primary-300">
+                    <span class="research-theme-icon flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border">
                       <ResearchAreaIcon area={area.slug} class="h-5 w-5" />
                     </span>
-                    <h3 class="font-serif text-2xl font-semibold text-ink">{area.label}</h3>
+                    <h3 id={`${area.slug}-heading`} class="research-theme-heading font-serif text-2xl font-semibold">{area.label}</h3>
                   </div>
                   {area.total > area.pubs.length && (
                     <a
                       href={withBase(`/publications#${area.slug}`)}
-                      class="group inline-flex shrink-0 items-center gap-1 text-sm font-medium text-primary-300 transition-colors hover:text-primary-200"
+                      class="research-theme-link group inline-flex min-h-10 shrink-0 items-center gap-1 text-sm font-medium transition-colors hover:underline"
                     >
                       All {area.total}
                       <span class="transition-transform group-hover:translate-x-0.5" aria-hidden="true">
@@ -45,15 +52,15 @@ const groups = await getResearchGroups(4);
                     </a>
                   )}
                 </div>
-                <p class="mt-2 max-w-3xl text-muted">{area.blurb}</p>
+                <p class="mt-4 max-w-3xl leading-relaxed text-muted">{area.blurb}</p>
                 {area.pubs.length > 0 ? (
-                  <div class="mt-4">
+                  <div class="research-area-publications mt-6 border-t">
                     <PubList pubs={area.pubs} />
                   </div>
                 ) : (
                   <p class="mt-4 text-sm text-muted">No publication has yet been assigned to this area.</p>
                 )}
-              </div>
+              </section>
             ))}
           </div>
         </section>

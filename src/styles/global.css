@@ -223,19 +223,19 @@
 }
 
 .planetary-reading .milky-way-background {
-  filter: saturate(0.4) brightness(1.15) contrast(1.08) blur(4px);
+  filter: saturate(0.4) brightness(1.15) contrast(1.08) blur(5px);
 }
 
 .planetary-reading .planetary-earth {
-  filter: saturate(0.85) brightness(0.98) contrast(1.03) blur(3px);
+  filter: saturate(0.85) brightness(0.98) contrast(1.03) blur(4px);
 }
 
 .planetary-reading .planetary-moon {
-  filter: brightness(0.95) blur(3.5px);
+  filter: brightness(0.95) blur(4.5px);
 }
 
 .planetary-reading .planetary-mars {
-  filter: saturate(0.65) brightness(0.95) blur(3.5px);
+  filter: saturate(0.65) brightness(0.95) blur(4.5px);
 }
 
 .planetary-reading .page-heading {
@@ -386,6 +386,69 @@
     inset 0 -1px 0 rgb(8 21 32 / 0.46),
     0 28px 66px rgb(0 0 0 / 0.38),
     0 8px 28px rgb(52 140 161 / 0.14);
+}
+
+/* Shared area colors use restrained, similarly light accents. Names and
+   symbols remain present, so color is never the only area identifier. */
+[data-research-theme="geodynamics-structure"] { --area-rgb: 142 190 214; }
+[data-research-theme="seismological-methods"] { --area-rgb: 185 174 218; }
+[data-research-theme="earthquake-properties"] { --area-rgb: 219 166 151; }
+[data-research-theme="earthquake-engineering"] { --area-rgb: 197 182 132; }
+[data-research-theme="environmental-seismology"] { --area-rgb: 134 198 169; }
+
+.research-area-panel.glass-panel,
+.research-theme-card.glass-panel {
+  border-color: rgb(var(--area-rgb) / 0.36);
+  background-image:
+    linear-gradient(125deg, rgb(var(--area-rgb) / 0.12), transparent 48%),
+    linear-gradient(145deg, rgb(20 42 58 / 0.88), rgb(10 26 39 / 0.88));
+  box-shadow:
+    inset 0 1px 0 rgb(var(--area-rgb) / 0.2),
+    0 24px 58px rgb(0 0 0 / 0.3),
+    0 5px 22px rgb(var(--area-rgb) / 0.06);
+}
+
+.research-area-panel:hover,
+.research-theme-card:hover {
+  border-color: rgb(var(--area-rgb) / 0.58);
+}
+
+.research-theme-icon {
+  color: rgb(var(--area-rgb));
+  border-color: rgb(var(--area-rgb) / 0.38);
+  background: rgb(var(--area-rgb) / 0.1);
+}
+
+.research-theme-heading,
+.research-theme-link {
+  color: rgb(var(--area-rgb));
+}
+
+.research-theme-link:focus-visible,
+.research-area-tag:focus-visible,
+.research-theme-card:focus-visible {
+  outline-color: rgb(var(--area-rgb));
+}
+
+.research-area-publications {
+  border-color: rgb(var(--area-rgb) / 0.24);
+}
+
+.research-area-tag {
+  color: rgb(var(--area-rgb));
+  border-color: rgb(var(--area-rgb) / 0.28);
+  background: rgb(var(--area-rgb) / 0.06);
+}
+
+.research-area-tag:hover {
+  border-color: rgb(var(--area-rgb) / 0.6);
+  background: rgb(var(--area-rgb) / 0.13);
+}
+
+.research-area-tag[data-active] {
+  color: var(--color-ink);
+  border-color: rgb(var(--area-rgb) / 0.8);
+  background: rgb(var(--area-rgb) / 0.24);
 }
 
 /* Scientific figures stay fully opaque and unfiltered. The translucent mat
@@ -722,7 +785,9 @@ html[data-panel-motion="paused"] .hero-waveform-track {
 
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
   .glass-panel,
-  .glass-panel:not(.glass-panel-heavy) {
+  .glass-panel:not(.glass-panel-heavy),
+  .research-area-panel.glass-panel,
+  .research-theme-card.glass-panel {
     background: var(--color-surface);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
@@ -746,13 +811,31 @@ html[data-panel-motion="paused"] .hero-waveform-track {
 }
 
 @media (forced-colors: active) {
-  .glass-panel {
+  .glass-panel,
+  .research-area-panel.glass-panel,
+  .research-theme-card.glass-panel {
     border: 1px solid CanvasText;
     background: Canvas;
     color: CanvasText;
     box-shadow: none;
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
+  }
+
+  .research-theme-icon,
+  .research-theme-heading,
+  .research-theme-link,
+  .research-area-tag,
+  .research-area-tag:hover {
+    color: CanvasText;
+    border-color: CanvasText;
+    background: Canvas;
+  }
+
+  .research-area-tag[data-active] {
+    color: HighlightText;
+    border-color: Highlight;
+    background: Highlight;
   }
 
 

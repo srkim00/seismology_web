@@ -172,14 +172,15 @@ const themes: { slug: AreaSlug; title: string; href: string; body: string }[] = 
             <a
               href={withBase(t.href)}
               data-home-area={t.slug}
+              data-research-theme={t.slug}
               data-floating-panel="true"
               data-floating-variant={String((index % 3) + 1)}
-              class="layered-card glass-panel group rounded-lg border p-6"
+              class="research-theme-card layered-card glass-panel group rounded-lg border p-6"
             >
-              <span class="mb-4 flex h-11 w-11 items-center justify-center rounded-lg border border-primary-800 bg-primary-950 text-primary-300">
+              <span class="research-theme-icon mb-4 flex h-11 w-11 items-center justify-center rounded-lg border">
                 <ResearchAreaIcon area={t.slug} class="h-6 w-6" />
               </span>
-              <h3 class="font-serif text-xl text-ink group-hover:text-primary-300">
+              <h3 class="research-theme-heading font-serif text-xl">
                 {t.title}
               </h3>
               <p class="mt-2 text-sm leading-relaxed text-muted">{t.body}</p>
