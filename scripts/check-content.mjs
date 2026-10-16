@@ -220,6 +220,20 @@ for (const { name, text } of formerMembers) {
 }
 
 for (const { name, text } of people) {
+  const headshot = scalar(text, "headshot");
+  const headshotSource = jsonValue(text, "headshotSource");
+  if (headshot) {
+    const imagePath = normalize(join(root, "src/content/people", headshot));
+    assert(imagePath.startsWith(join(root, "src/assets/people") + "/"), `${name}: headshot must be a local people asset`);
+    assert(existsSync(imagePath), `${name}: headshot asset is missing`);
+    assert(validImageSignature(imagePath), `${name}: headshot asset is not a supported image`);
+  }
+  if (headshotSource) {
+    assert(headshot, `${name}: headshotSource requires a headshot`);
+    assert(headshotSource.pageUrl?.startsWith("https://"), `${name}: headshot source page must use HTTPS`);
+    assert(/^https?:\/\//.test(headshotSource.imageUrl ?? ""), `${name}: headshot source image URL is invalid`);
+    assert(validIsoCalendarDate(headshotSource.checkedAt ?? ""), `${name}: headshot check date is invalid`);
+  }
   const publicationNames = jsonValue(text, "publicationNames");
   const identifierStatus = scalar(text, "identifierStatus");
   const institutionalProfile = scalar(text, "institutional", "  ");

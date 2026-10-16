@@ -4,6 +4,8 @@ status: alumni
 group: Alumni
 role: "Alumni"
 title: "M.S. in Seismology · September 2023–September 2025"
+headshot: ../../assets/people/sigit-ariwibowo.jpg
+headshotSource: {"pageUrl":"https://www.postf.org/en/asia/abroad/fellow?p=9","imageUrl":"https://www.postf.org/uploads/fellow/65ee8f56b0a5d_Pas%20Photo%20Sigit%20Ariwibowo.jpeg","checkedAt":"2026-10-16"}
 affiliation: "Meteorological, Climatological, and Geophysical Agency (BMKG), Indonesia; M.S., Korea University, 2025"
 currentAffiliation: "Meteorological, Climatological, and Geophysical Agency (BMKG), Indonesia"
 publicationNames: []

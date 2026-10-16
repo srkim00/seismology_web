@@ -18,6 +18,19 @@ The Research page also displays the existing representative figures and brief no
 
 The public people dataset contains 22 laboratory profiles, including 7 profiles with verified ORCID identifiers. Names, publication aliases, and identifiers are connected only when supported by explicit evidence. Similar names are not assumed to represent the same person. The non-laboratory mathematics faculty member named Donghun Lee is not included as a laboratory profile, and his publication author name is not assigned to KIGAM-affiliated Dong Hun Lee. Internal identifier-review status, dates, notes, and evidence sources are retained in the content records but are not rendered on public people pages. Publication author markers do not distinguish current from former members; a profile without a photograph is shown with initials only.
 
+## Additional member photographs
+
+The following portraits were obtained from public person-level pages on 16 October 2026 after matching the person's academic history or institutional affiliation to the laboratory record. Original files are retained locally and displayed with the site's existing image sizing and circular framing. Exact source-image URLs and check dates are retained in each profile's internal `headshotSource` field.
+
+| Local asset | Source |
+| --- | --- |
+| `src/assets/people/jongwon-han.jpg` | [Jongwon Han's personal academic website](https://www.jongwon-han.com/) |
+| `src/assets/people/sigit-ariwibowo.jpg` | [POSCO TJ Park Foundation fellowship directory, 2023 cohort](https://www.postf.org/en/asia/abroad/fellow?p=9) |
+| `src/assets/people/satbyul-kim.png` | [Pukyong National University Geophysics Laboratory People page](https://geophysics.pknu.ac.kr/People.html) |
+| `src/assets/people/sang-jun-lee.jpg` | [Korea National University of Education faculty profile](https://www.knue.ac.kr/www/selectProfInfoWebView.do?code=UNIV25&key=507&userNo=110054) |
+
+No Creative Commons or other open reuse license was stated for these portraits on the checked pages. Copyright remains with the respective rights holders; inclusion does not relicense the photographs under the template's MIT License or grant permission for further reuse. Profiles for which no usable, identity-matched portrait was found retain initials; generic silhouettes and photographs of similarly named people were not substituted.
+
 ## Astronomical background imagery
 
 Home, People, Research, Publications, Tools & Teaching, Contact, and the related person and publication detail pages use spacecraft observations and an optical sky panorama, not AI-generated astronomical images:

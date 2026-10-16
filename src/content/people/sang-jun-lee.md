@@ -4,6 +4,8 @@ status: alumni
 group: Former Researchers
 role: "Former Researcher"
 title: "Research professor · September 2020–August 2021"
+headshot: ../../assets/people/sang-jun-lee.jpg
+headshotSource: {"pageUrl":"https://www.knue.ac.kr/www/selectProfInfoWebView.do?code=UNIV25&key=507&userNo=110054","imageUrl":"https://www.knue.ac.kr/DATA/prof/110054.jpg","checkedAt":"2026-10-16"}
 affiliation: "Professor, Korea National University of Education (KNUE); former Research Professor, Korea University"
 currentAffiliation: "Professor, Department of Earth Science Education, Korea National University of Education (KNUE)"
 publicationNames: ["Sang-Jun Lee"]

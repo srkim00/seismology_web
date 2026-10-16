@@ -4,6 +4,8 @@ status: alumni
 group: Former Researchers
 role: "Former Researcher"
 title: "Ph.D. · Research professor · March 2022–February 2023"
+headshot: ../../assets/people/satbyul-kim.png
+headshotSource: {"pageUrl":"https://geophysics.pknu.ac.kr/People.html","imageUrl":"https://geophysics.pknu.ac.kr/images/people/satbyulkim.png","checkedAt":"2026-10-16"}
 affiliation: "Former Research Professor, Korea University; Ph.D., Pukyong National University; later listed in New Mexico, USA without a named institution"
 currentAffiliation: "Current affiliation not publicly verified"
 publicationNames: ["SatByul Kim"]

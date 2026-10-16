@@ -33,6 +33,14 @@ const people = defineCollection({
       affiliation: z.string().optional(),
       currentAffiliation: z.string().optional(),
       headshot: image().optional(),
+      // Editorial provenance only; not rendered on public profile pages.
+      headshotSource: z
+        .object({
+          pageUrl: z.url(),
+          imageUrl: z.url(),
+          checkedAt: z.iso.date(),
+        })
+        .optional(),
       // Only these reviewed author forms are used for publication matching.
       // An empty array disables automatic author matching (fail closed).
       publicationNames: z.array(z.string().min(1)).default([]),
