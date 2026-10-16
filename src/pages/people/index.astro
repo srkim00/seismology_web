@@ -1,10 +1,17 @@
 ---
 import BaseLayout from "../../components/BaseLayout.astro";
 import PageHeader from "../../components/PageHeader.astro";
+import PersonCard from "../../components/PersonCard.astro";
 import PersonGroup from "../../components/PersonGroup.astro";
 import { getGroupedPeople } from "../../lib/content";
 
 const groups = await getGroupedPeople();
+const pi = groups.find((group) => group.group === "Faculty");
+const researchers = groups.find((group) => group.group === "Researchers");
+const students = groups.find((group) => group.group === "Students");
+const remainingGroups = groups.filter(
+  (group) => group.group !== "Faculty" && group.group !== "Researchers" && group.group !== "Students",
+);
 ---
 
 <BaseLayout
@@ -14,6 +21,42 @@ const groups = await getGroupedPeople();
 >
   <PageHeader title="People" />
   <div class="container-page py-12">
-    {groups.map((g) => <PersonGroup title={g.group} people={g.people} />)}
+    <div class="mb-14 grid gap-y-10 md:grid-cols-3">
+      {
+        pi && (
+          <section aria-labelledby="people-pi" class="min-w-0 md:pr-8">
+            <h2
+              id="people-pi"
+              class="mb-8 border-b border-line pb-2 font-serif text-2xl text-ink"
+            >
+              PI
+            </h2>
+            <div class="grid gap-x-6 gap-y-10">
+              {pi.people.map((person) => <PersonCard person={person} />)}
+            </div>
+          </section>
+        )
+      }
+      {
+        researchers && (
+          <section
+            aria-labelledby="people-researchers"
+            class="min-w-0 border-t border-line pt-8 md:col-span-2 md:border-t-0 md:border-l md:pt-0 md:pl-8"
+          >
+            <h2
+              id="people-researchers"
+              class="mb-8 border-b border-line pb-2 font-serif text-2xl text-ink"
+            >
+              Researchers
+            </h2>
+            <div class="grid grid-cols-2 gap-x-6 gap-y-10">
+              {researchers.people.map((person) => <PersonCard person={person} />)}
+            </div>
+          </section>
+        )
+      }
+    </div>
+    {students && <PersonGroup title={students.group} people={students.people} />}
+    {remainingGroups.map((g) => <PersonGroup title={g.group} people={g.people} />)}
   </div>
 </BaseLayout>

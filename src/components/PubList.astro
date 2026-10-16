@@ -89,7 +89,7 @@ const initialsFor = (name: string) => {
         >
           {layout === "research" && <ResearchPublicationPreview publication={p} />}
           <div class="min-w-0" data-research-publication-info={layout === "research" ? "" : undefined}>
-          <p class="font-medium text-ink">
+          <p class="publication-title font-medium text-ink">
             {publicationNumber && (
               <span
                 class="mr-2 inline-block min-w-8 font-mono text-sm font-semibold text-primary-300"
@@ -106,7 +106,7 @@ const initialsFor = (name: string) => {
             </a>
           </p>
 
-          <p class="mt-1 text-sm text-muted">
+          <p class="publication-authors mt-1 text-sm text-muted">
             <span class:list={["authors", d.authors.length > 14 && "clamped"]}>
               {d.authors.map((a, i) => {
                 const person = findPerson(a);
@@ -139,7 +139,7 @@ const initialsFor = (name: string) => {
             )}
           </p>
 
-          <p class="mt-0.5 text-sm text-muted">
+          <p class="publication-venue mt-0.5 text-sm text-muted">
             {d.status === "published" && d.publicationDate ? (
               <>
                 {d.journal && <em>{d.journal}</em>}
@@ -267,9 +267,20 @@ const initialsFor = (name: string) => {
     align-items: start;
   }
 
+  .research-publication-row .publication-title {
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+
+  .research-publication-row .publication-authors,
+  .research-publication-row .publication-venue {
+    font-size: 0.75rem;
+    line-height: 1.65;
+  }
+
   @media (min-width: 768px) {
     .research-publication-row {
-      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.6fr);
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
       gap: 1.5rem;
     }
   }

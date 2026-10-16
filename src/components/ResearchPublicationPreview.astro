@@ -64,7 +64,7 @@ const figureLabel = figure?.number && (/^Figure \d+$/i.test(figure.number) || /^
   )}
   {(brief || localFigure) && (
     <figcaption class="border-t border-line px-3 py-3">
-      {brief && <p class="text-sm leading-relaxed text-ink" data-research-brief>{brief}</p>}
+      {brief && <p class="text-base leading-relaxed text-ink" data-research-brief>{brief}</p>}
       {localFigure && (
         <p class:list={["text-[11px] leading-relaxed text-muted", brief && "mt-2"]} data-research-figure-rights>
           {localFigure.attribution}
@@ -81,10 +81,10 @@ const figureLabel = figure?.number && (/^Figure \d+$/i.test(figure.number) || /^
 </figure>
 
 <style>
-  /* Match one third of the Featured research figure-stage height. The
+  /* Match half of the Featured research figure-stage height. The
      complete, opaque scientific figure is fitted without cropping. */
   .research-publication-media {
-    height: calc(22rem / 3);
+    height: calc(22rem / 2);
   }
 
   .research-publication-media.figure-glass-stage {
@@ -93,13 +93,13 @@ const figureLabel = figure?.number && (/^Figure \d+$/i.test(figure.number) || /^
 
   @media (min-width: 640px) {
     .research-publication-media {
-      height: calc(28rem / 3);
+      height: calc(28rem / 2);
     }
   }
 
   @media (min-width: 1024px) {
     .research-publication-media {
-      height: calc(34rem / 3);
+      height: calc(34rem / 2);
     }
   }
 </style>
