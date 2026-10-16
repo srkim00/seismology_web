@@ -40,7 +40,7 @@ export const site: SiteConfig = {
   institutionUrl: "https://ees.korea.ac.kr/eaes/index.do",
   university: "Korea University",
   universityUrl: "https://www.korea.edu/en/index.do",
-  url: "https://srkim00.github.io/seismology_web/",
+  url: "https://seismology.korea.ac.kr/",
   description:
     "We study Earth structure, earthquake processes, seismic hazards, and environmental change using observational seismology, numerical modelling, Bayesian inversion, and machine-learning methods.",
   email: "seongryongkim(at)korea.ac.kr",

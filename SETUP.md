@@ -10,25 +10,26 @@ Repository: <https://github.com/srkim00/seismology_web>
 
 In the repository, open **Settings → Pages** and set **Build and deployment → Source** to **GitHub Actions**. The included `.github/workflows/deploy.yml` workflow builds the Astro site and deploys the `dist/` output.
 
-## 3. Check the GitHub Pages URL
+## 3. Production URL
 
-The current configuration is prepared for the project-page URL:
+The site uses the university custom domain:
 
-- <https://srkim00.github.io/seismology_web/>
-- `astro.config.mjs` uses `site: "https://srkim00.github.io"` and `base: "/seismology_web"`.
-- No `public/CNAME` is present while the existing domain remains connected to Google Sites.
+- <https://seismology.korea.ac.kr/>
+- `astro.config.mjs` uses `site: "https://seismology.korea.ac.kr"` without a `base` prefix.
+- `src/data/site.ts` and `public/robots.txt` use the same production domain.
 
-Verify the navigation, publication citation dialog, figures, and embedded tool from this address before a custom-domain cutover.
+Verify navigation, the publication citation dialog, figures, CV download, and the embedded tool from this address after deployment.
 
 ## 4. Configure the custom domain
 
-Do not change DNS until the GitHub Pages project URL has been reviewed and approved. At cutover:
+The university manages DNS. The registered subdomain points to GitHub Pages through the following configuration:
 
-1. Set `site: "https://seismology.korea.ac.kr"` in `astro.config.mjs` and remove `base`.
-2. Add `public/CNAME` containing `seismology.korea.ac.kr`.
-3. In **Settings → Pages → Custom domain**, enter `seismology.korea.ac.kr`.
-4. Replace the existing DNS record only with approval and use the value requested by GitHub Pages.
-5. Wait for GitHub's DNS check to pass, then enable **Enforce HTTPS**.
+1. In **Settings → Pages → Custom domain**, save `seismology.korea.ac.kr`.
+2. The DNS CNAME for `seismology.korea.ac.kr` must point to `srkim00.github.io`, without the repository name or an HTTPS prefix. Do not alter university DNS without authorization.
+3. Set `site: "https://seismology.korea.ac.kr"` in `astro.config.mjs`, omit `base`, and deploy the rebuilt site.
+4. Confirm GitHub's DNS check and certificate issuance, and keep **Enforce HTTPS** enabled. A pending certificate is separate from the application deployment; do not bypass browser certificate warnings.
+
+This repository publishes through a custom GitHub Actions workflow. GitHub does not require a `CNAME` file for this publishing method, and an existing file does not replace the **Custom domain** setting. See the [GitHub domain configuration documentation](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site).
 
 ## 5. Configure publication automation
 
@@ -49,7 +50,7 @@ AI output is never published solely because the workflow ran. The generated file
 
 Before changing `summaryStatus` to `source-checked` or `approved`, compare the summary metadata and `mainFindings` with the paper or a documented source and record the supporting source in the publication file. Use `source-checked` when author review is still recommended and `approved` only after the designated reviewer accepts the interpretation. Once reviewed, the public page renders only the first English sentence of `mainFindings`, limited to 30 words; the longer summary, evidence fields, and source list remain internal. Do not infer a DOI, figure, summary, publication alias, ORCID, or other researcher identifier from a similar name.
 
-## 6. Pre-cutover checks
+## 6. Deployment checks
 
 - `npm ci` and `npm run build` complete successfully.
 - Home, People, Research, Publications, Tools & Teaching, and Contact load at desktop and mobile widths.

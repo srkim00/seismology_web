@@ -6,14 +6,10 @@ import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-  // Your site's production URL — used for canonical links + the sitemap.
-  //
-  // • Custom/apex domain: set it here (e.g. 'https://lab.example.edu')
-  //   and put that same host in public/CNAME. Do NOT set `base`.
-  // • No custom domain (project page at <user>.github.io/<repo>): instead use
-  //   site: 'https://<user>.github.io' and base: '/<repo>', and delete public/CNAME.
-  site: 'https://srkim00.github.io',
-  base: '/seismology_web',
+  // Serve the custom domain from its root; canonical links and the sitemap
+  // use this URL. The domain is registered in GitHub Settings → Pages.
+  // Custom GitHub Actions deployments do not require a CNAME file.
+  site: 'https://seismology.korea.ac.kr',
 
   vite: {
     plugins: [tailwindcss()]

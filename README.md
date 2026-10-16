@@ -114,7 +114,7 @@ Before changing that status, the reviewer must compare the summary metadata and 
 
 ## Deployment
 
-The `Deploy to GitHub Pages` workflow builds and publishes the site on pushes to `main`. The current public preview is configured as the project page at <https://srkim00.github.io/seismology_web/>. In the repository settings, set **Pages → Source** to **GitHub Actions**. The existing `seismology.korea.ac.kr` DNS record remains unchanged until a separately approved custom-domain cutover. See [SETUP.md](./SETUP.md) for the deployment and cutover sequence.
+The `Deploy to GitHub Pages` workflow builds and publishes the site on pushes to `main`. The production address is <https://seismology.korea.ac.kr/>. In the repository settings, **Pages → Source** is **GitHub Actions** and **Custom domain** is `seismology.korea.ac.kr`. Astro uses the custom-domain URL without a repository `base` prefix. The university-managed DNS CNAME points to `srkim00.github.io`. Custom GitHub Actions deployments use the Pages setting rather than a `CNAME` file. See [SETUP.md](./SETUP.md) for deployment and domain configuration.
 
 ## Rights and attribution
 

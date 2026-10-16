@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://srkim00.github.io/seismology_web/sitemap-index.xml
+Sitemap: https://seismology.korea.ac.kr/sitemap-index.xml
