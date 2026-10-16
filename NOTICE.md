@@ -14,6 +14,8 @@ Nineteen figures are included locally: 13 under CC BY 4.0, 5 unmodified original
 
 The PI curriculum vitae at `public/cv/Seongryong-Kim-CV.pdf` is provided for personal academic reference and is not covered by the template's MIT License.
 
+The Research page also displays the existing representative figures and brief notes alongside each paper's bibliographic and author information. This layout reuses the same local images, source links, attribution, reuse notices, and reviewed brief text as the publication records. Figures are fitted to compact frames without cropping, recoloring, or filtering; linked-only figure records remain links to the publisher rather than copied images. Draft summaries are not displayed.
+
 The public people dataset contains 22 laboratory profiles, including 7 profiles with verified ORCID identifiers. Names, publication aliases, and identifiers are connected only when supported by explicit evidence. Similar names are not assumed to represent the same person. The non-laboratory mathematics faculty member named Donghun Lee is not included as a laboratory profile, and his publication author name is not assigned to KIGAM-affiliated Dong Hun Lee. Internal identifier-review status, dates, notes, and evidence sources are retained in the content records but are not rendered on public people pages. Publication author markers do not distinguish current from former members; a profile without a photograph is shown with initials only.
 
 ## Astronomical background imagery

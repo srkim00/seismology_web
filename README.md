@@ -42,9 +42,13 @@ The 43 published papers show an exact day-month-year publication date in lists, 
 
 Published-paper detail pages use a figure-first format: a representative figure or publisher figure link, the first English sentence of the source-checked `mainFindings` field (no more than 30 words), and the citation. The longer summaries, evidence fields, and source lists remain in the publication Markdown for editorial review but are not rendered publicly. The work-in-preparation record is shown only in the separate bottom section and its detail page; it has neither a representative figure nor a public brief note.
 
+## Research layout
+
+The Research page presents each paper with its representative figure and existing brief note on the left, and bibliographic details, author markers, area tags, DOI, and citation control on the right. On narrow screens the figure and note precede the bibliographic information. Figure frames use one third of the corresponding Featured research frame height (22, 28, or 34rem divided by three), without cropping or filtering scientific images. Source attribution and reuse notices remain below local figures; linked-only figures retain publisher links. The redundant `Figure and brief note` link is omitted only in this Research layout. Publications and personal profiles retain their standard lists.
+
 ## Citation copying
 
-Each published paper provides a **Cite** control in the Publications list, Featured recent research, and the publication detail page. The control opens one modal dialog within the current page; it does not open a new window. Seven output forms are available:
+Each published paper provides a **Cite** control in the Publications list, Research, Featured recent research, and the publication detail page. The control opens one modal dialog within the current page; it does not open a new window. Seven output forms are available:
 
 - AGU journals
 - *Geophysical Journal International* (GJI)

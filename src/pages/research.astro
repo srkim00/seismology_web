@@ -52,7 +52,7 @@ const groups = await getResearchGroups(4);
                 <p class="mt-4 max-w-3xl leading-relaxed text-muted">{area.blurb}</p>
                 {area.pubs.length > 0 ? (
                   <div class="research-area-publications mt-6 border-t">
-                    <PubList pubs={area.pubs} />
+                    <PubList pubs={area.pubs} layout="research" />
                   </div>
                 ) : (
                   <p class="mt-4 text-sm text-muted">No publication has yet been assigned to this area.</p>

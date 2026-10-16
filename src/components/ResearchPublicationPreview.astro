@@ -1,0 +1,105 @@
+---
+import type { Publication } from "../lib/content";
+import { briefFinding } from "../lib/content";
+import { withBase } from "../lib/urls";
+
+interface Props {
+  publication: Publication;
+}
+
+const { publication } = Astro.props;
+const d = publication.data;
+const figure = d.figure;
+const localFigure = figure?.reuse === "local" ? figure : null;
+const showBrief = d.summaryStatus === "source-checked" || d.summaryStatus === "approved";
+const brief = showBrief ? briefFinding(d.mainFindings) : "";
+const figureLabel = figure?.number && (/^Figure \d+$/i.test(figure.number) || /^Graphical abstract$/i.test(figure.number))
+  ? figure.number
+  : "representative figure";
+---
+
+<figure
+  class="research-publication-preview min-w-0 rounded-lg border border-line bg-surface/35"
+  data-research-publication-preview
+  data-media-kind={localFigure ? "local" : figure ? "linked-only" : "none"}
+>
+  {localFigure ? (
+    <a
+      href={localFigure.sourceUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={`View ${figureLabel} for ${d.title} on the publisher site`}
+      class="research-publication-media figure-glass-stage figure-action m-2 flex items-center justify-center"
+      data-research-figure-stage
+    >
+      <span class="figure-paper">
+        <img
+          src={withBase(localFigure.image)}
+          alt={localFigure.alt}
+          class="scientific-figure-image"
+          loading="lazy"
+          decoding="async"
+        />
+      </span>
+    </a>
+  ) : figure && (
+    <div
+      class="research-publication-media m-2 flex flex-col items-center justify-center rounded-lg border border-line bg-surface-muted/45 px-4 text-center"
+      data-research-figure-stage
+    >
+      <svg viewBox="0 0 24 24" class="h-6 w-6 shrink-0 text-muted" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <path d="M4 5.5A1.5 1.5 0 0 1 5.5 4h13A1.5 1.5 0 0 1 20 5.5v13a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5v-13Z" />
+        <path d="m5 16 4.5-4.5 3 3 2-2L19 17M15.5 8.5h.01" />
+      </svg>
+      <a
+        href={figure.sourceUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={`View ${figureLabel} for ${d.title} on the publisher site`}
+        class="mt-1 inline-flex min-h-11 items-center justify-center text-xs font-medium text-primary-300 hover:text-primary-200 hover:underline"
+      >
+        View {figureLabel} at publisher &rarr;
+      </a>
+    </div>
+  )}
+  {(brief || localFigure) && (
+    <figcaption class="border-t border-line px-3 py-3">
+      {brief && <p class="text-sm leading-relaxed text-ink" data-research-brief>{brief}</p>}
+      {localFigure && (
+        <p class:list={["text-[11px] leading-relaxed text-muted", brief && "mt-2"]} data-research-figure-rights>
+          {localFigure.attribution}
+          <span> · </span>
+          {localFigure.licenseUrl ? (
+            <a href={localFigure.licenseUrl} target="_blank" rel="noopener noreferrer" class="text-primary-300 hover:text-primary-200 hover:underline">
+              {localFigure.license}
+            </a>
+          ) : <span>{localFigure.license}</span>}
+        </p>
+      )}
+    </figcaption>
+  )}
+</figure>
+
+<style>
+  /* Match one third of the Featured research figure-stage height. The
+     complete, opaque scientific figure is fitted without cropping. */
+  .research-publication-media {
+    height: calc(22rem / 3);
+  }
+
+  .research-publication-media.figure-glass-stage {
+    padding: 0.5rem;
+  }
+
+  @media (min-width: 640px) {
+    .research-publication-media {
+      height: calc(28rem / 3);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .research-publication-media {
+      height: calc(34rem / 3);
+    }
+  }
+</style>

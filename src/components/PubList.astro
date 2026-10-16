@@ -14,12 +14,14 @@ import { withBase } from "../lib/urls";
 import PublicationBadges from "./PublicationBadges.astro";
 import ResearchAreaIcon from "./ResearchAreaIcon.astro";
 import CitationButton from "./CitationButton.astro";
+import ResearchPublicationPreview from "./ResearchPublicationPreview.astro";
 
 interface Props {
   pubs: Publication[];
   listId?: string;
+  layout?: "list" | "research";
 }
-const { pubs, listId } = Astro.props;
+const { pubs, listId, layout = "list" } = Astro.props;
 const publicationNumbers = getPublicationNumberMap(await getPublications());
 
 // Directory of lab people, for linking author names and showing lab-author markers.
@@ -70,7 +72,7 @@ const initialsFor = (name: string) => {
       const labPeople = labPeopleFor(p);
       return (
         <li
-          class="py-5"
+          class:list={["py-5", layout === "research" && "research-publication-row"]}
           data-pub
           data-year={d.year}
           data-publication-date={d.publicationDate}
@@ -85,6 +87,8 @@ const initialsFor = (name: string) => {
           data-publication-id={p.id}
           data-publication-number={publicationNumber}
         >
+          {layout === "research" && <ResearchPublicationPreview publication={p} />}
+          <div class="min-w-0" data-research-publication-info={layout === "research" ? "" : undefined}>
           <p class="font-medium text-ink">
             {publicationNumber && (
               <span
@@ -221,9 +225,11 @@ const initialsFor = (name: string) => {
               </a>
             )}
             <CitationButton publication={p} />
-            <a href={withBase(`/publications/${p.id}`)} class="text-primary-300 hover:text-primary-200 hover:underline">
-              {d.figure ? "Figure and brief note" : "Publication record"}
-            </a>
+            {layout !== "research" && (
+              <a href={withBase(`/publications/${p.id}`)} class="text-primary-300 hover:text-primary-200 hover:underline">
+                {d.figure ? "Figure and brief note" : "Publication record"}
+              </a>
+            )}
             {d.scholarUrl && (
               <a
                 href={d.scholarUrl}
@@ -235,7 +241,7 @@ const initialsFor = (name: string) => {
               </a>
             )}
           </div>
-
+          </div>
         </li>
       );
     })
@@ -253,3 +259,18 @@ const initialsFor = (name: string) => {
     });
   });
 </script>
+
+<style>
+  .research-publication-row {
+    display: grid;
+    gap: 1.25rem;
+    align-items: start;
+  }
+
+  @media (min-width: 768px) {
+    .research-publication-row {
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.6fr);
+      gap: 1.5rem;
+    }
+  }
+</style>
