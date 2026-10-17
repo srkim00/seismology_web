@@ -37,14 +37,16 @@ const { priority = "low" } = Astro.props;
     decoding="async"
     draggable="false"
   />
-  <img
-    class="planetary-image planetary-earth"
-    src={withBase("/backgrounds/earth-dscovr-epic.webp")}
-    width="1800"
-    height="1800"
-    alt=""
-    decoding="async"
-    fetchpriority={priority}
-    draggable="false"
-  />
+  <div class="planetary-image planetary-earth">
+    <img
+      class="planetary-earth-disc"
+      src={withBase("/backgrounds/earth-dscovr-epic.webp")}
+      width="1800"
+      height="1800"
+      alt=""
+      decoding="async"
+      fetchpriority={priority}
+      draggable="false"
+    />
+  </div>
 </div>

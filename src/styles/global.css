@@ -116,7 +116,7 @@
 }
 
 .milky-way-background {
-  --sky-dimming: 0.3;
+  --sky-dimming: 0.43;
   position: absolute;
   inset: -4%;
   z-index: 0;
@@ -128,7 +128,8 @@
   opacity: 1;
   filter: saturate(0.45) brightness(1.25) contrast(1.12) blur(2px) brightness(var(--sky-dimming));
   mix-blend-mode: normal;
-  transform: rotate(-12deg) scale(1.2);
+  /* Enlarge the band without distorting it; side cropping is intentional. */
+  transform: rotate(-12deg) scale(1.65);
   user-select: none;
 }
 
@@ -154,10 +155,22 @@
   top: 49%;
   right: calc(var(--earth-size) * -0.66);
   width: var(--earth-size);
-  /* Remove the black source margin without moving or resizing the disk. */
-  clip-path: circle(40% at 50% 50%);
+  /* Clip the child first, then apply the existing blur to the whole disk. */
+  clip-path: none;
   filter: saturate(0.95) brightness(1.08) contrast(1.06) blur(0.6px) brightness(var(--planet-dimming));
   transform: translateY(-50%);
+}
+
+.planetary-earth-disc {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  /* Exclude the source's dark limb fringe (r≈718–722px in the 1800px
+     image), retaining an opaque interior and an unmodified source file. */
+  clip-path: circle(39.3% at 50% 50%);
 }
 
 .planetary-moon {
@@ -261,7 +274,7 @@
 
 @media (max-width: 639px) {
   .milky-way-background {
-    --sky-dimming: 0.26;
+    --sky-dimming: 0.37;
   }
 
   .planetary-earth {
