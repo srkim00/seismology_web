@@ -103,8 +103,7 @@
   z-index: 0;
   overflow: hidden;
   pointer-events: none;
-  /* The fixed stacking context supplies its own base for screen blending,
-     so the source photographs' black margins do not form visible halos. */
+  /* Opaque photographs are stacked here, independently of page content. */
   background:
     radial-gradient(ellipse at 22% 36%, rgb(38 72 90 / 0.28), transparent 70%),
     linear-gradient(125deg, #0c1c28, #091721 60%, #07131d);
@@ -117,6 +116,7 @@
 }
 
 .milky-way-background {
+  --sky-dimming: 0.3;
   position: absolute;
   inset: -4%;
   z-index: 0;
@@ -125,9 +125,9 @@
   height: 108%;
   object-fit: cover;
   object-position: center;
-  opacity: 0.3;
-  filter: saturate(0.45) brightness(1.25) contrast(1.12) blur(2px);
-  mix-blend-mode: screen;
+  opacity: 1;
+  filter: saturate(0.45) brightness(1.25) contrast(1.12) blur(2px) brightness(var(--sky-dimming));
+  mix-blend-mode: normal;
   transform: rotate(-12deg) scale(1.2);
   user-select: none;
 }
@@ -140,36 +140,43 @@
   height: auto;
   aspect-ratio: 1;
   border-radius: 50%;
-  mix-blend-mode: screen;
+  clip-path: circle(50% at 50% 50%);
+  opacity: 1;
+  mix-blend-mode: normal;
   user-select: none;
 }
 
 /* Preserve the observed ocean/land colors and coastline detail. */
 .planetary-earth {
   --earth-size: clamp(100rem, 140vw, 160rem);
+  --planet-dimming: 0.72;
+  z-index: 3;
   top: 49%;
   right: calc(var(--earth-size) * -0.66);
   width: var(--earth-size);
-  opacity: 0.72;
-  filter: saturate(0.95) brightness(1.08) contrast(1.06) blur(0.6px);
+  /* Remove the black source margin without moving or resizing the disk. */
+  clip-path: circle(40% at 50% 50%);
+  filter: saturate(0.95) brightness(1.08) contrast(1.06) blur(0.6px) brightness(var(--planet-dimming));
   transform: translateY(-50%);
 }
 
 .planetary-moon {
+  --planet-dimming: 0.46;
+  z-index: 2;
   top: 5rem;
   left: -3.5rem;
   width: clamp(18rem, 27vw, 32rem);
-  opacity: 0.46;
-  filter: brightness(1.02) blur(0.7px);
+  filter: brightness(1.02) blur(0.7px) brightness(var(--planet-dimming));
   transform: rotate(-18deg);
 }
 
 .planetary-mars {
+  --planet-dimming: 0.44;
+  z-index: 1;
   top: 48%;
   left: 13%;
   width: clamp(28rem, 44vw, 48rem);
-  opacity: 0.44;
-  filter: saturate(0.72) brightness(1.02) blur(0.9px);
+  filter: saturate(0.72) brightness(1.02) blur(0.9px) brightness(var(--planet-dimming));
   transform: rotate(18deg);
 }
 
@@ -218,24 +225,24 @@
   content: "";
   position: absolute;
   inset: 0;
-  z-index: 2;
+  z-index: 4;
   background: rgb(8 21 32 / 0.62);
 }
 
 .planetary-reading .milky-way-background {
-  filter: saturate(0.4) brightness(1.15) contrast(1.08) blur(5px);
+  filter: saturate(0.4) brightness(1.15) contrast(1.08) blur(5px) brightness(var(--sky-dimming));
 }
 
 .planetary-reading .planetary-earth {
-  filter: saturate(0.85) brightness(0.98) contrast(1.03) blur(4px);
+  filter: saturate(0.85) brightness(0.98) contrast(1.03) blur(4px) brightness(var(--planet-dimming));
 }
 
 .planetary-reading .planetary-moon {
-  filter: brightness(0.95) blur(4.5px);
+  filter: brightness(0.95) blur(4.5px) brightness(var(--planet-dimming));
 }
 
 .planetary-reading .planetary-mars {
-  filter: saturate(0.65) brightness(0.95) blur(4.5px);
+  filter: saturate(0.65) brightness(0.95) blur(4.5px) brightness(var(--planet-dimming));
 }
 
 .planetary-reading .page-heading {
@@ -244,7 +251,7 @@
 
 @media (min-width: 640px) and (max-width: 1023px) {
   .planetary-earth {
-    opacity: 0.62;
+    --planet-dimming: 0.62;
   }
 
   .hero-background-shade {
@@ -254,28 +261,28 @@
 
 @media (max-width: 639px) {
   .milky-way-background {
-    opacity: 0.26;
+    --sky-dimming: 0.26;
   }
 
   .planetary-earth {
     --earth-size: 70rem;
     right: calc(var(--earth-size) * -0.69);
     top: 48%;
-    opacity: 0.62;
+    --planet-dimming: 0.62;
   }
 
   .planetary-moon {
     top: 5.25rem;
     left: -4.5rem;
     width: 14rem;
-    opacity: 0.4;
+    --planet-dimming: 0.4;
   }
 
   .planetary-mars {
     left: -12%;
     top: 52%;
     width: 23rem;
-    opacity: 0.36;
+    --planet-dimming: 0.36;
   }
 
   .hero-background-shade {

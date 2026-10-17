@@ -20,13 +20,12 @@ const { priority = "low" } = Astro.props;
     draggable="false"
   />
   <img
-    class="planetary-image planetary-earth"
-    src={withBase("/backgrounds/earth-dscovr-epic.webp")}
-    width="1800"
-    height="1800"
+    class="planetary-image planetary-mars"
+    src={withBase("/backgrounds/mars-viking.webp")}
+    width="900"
+    height="900"
     alt=""
     decoding="async"
-    fetchpriority={priority}
     draggable="false"
   />
   <img
@@ -39,12 +38,13 @@ const { priority = "low" } = Astro.props;
     draggable="false"
   />
   <img
-    class="planetary-image planetary-mars"
-    src={withBase("/backgrounds/mars-viking.webp")}
-    width="900"
-    height="900"
+    class="planetary-image planetary-earth"
+    src={withBase("/backgrounds/earth-dscovr-epic.webp")}
+    width="1800"
+    height="1800"
     alt=""
     decoding="async"
+    fetchpriority={priority}
     draggable="false"
   />
 </div>
