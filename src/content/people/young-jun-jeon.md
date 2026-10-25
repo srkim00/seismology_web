@@ -6,7 +6,9 @@ role: "Ph.D. Student"
 title: "M.S. in Seismology · March 2021–present"
 headshot: ../../assets/people/young-jun-jeon.jpg
 affiliation: "Seismology Laboratory, Department of Earth and Environmental Sciences, Korea University"
-publicationNames: ["Youngjun Jeon"]
+# The manuscript title page supplied on 2026-10-25 confirms "Yeongjun Jeon"
+# through the exact profile email segu@korea.ac.kr.
+publicationNames: ["Youngjun Jeon", "Yeongjun Jeon"]
 links:
   email: "segu@korea.ac.kr"
   orcid: "https://orcid.org/0009-0000-1640-7954"

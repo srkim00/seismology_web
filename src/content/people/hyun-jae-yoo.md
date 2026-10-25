@@ -6,7 +6,9 @@ role: "Research Professor"
 title: "Ph.D. · August 2006–present"
 headshot: ../../assets/people/hyun-jae-yoo.png
 affiliation: "Research Professor, Korea University; previously Pukyong National University"
-publicationNames: []
+# The manuscript title page supplied on 2026-10-25 confirms this author form
+# through the exact profile email yoonow@gmail.com.
+publicationNames: ["Hyunjae Yoo"]
 links:
   email: "yoonow@gmail.com"
   researchgate: "https://www.researchgate.net/profile/Hyun-Jae-Yoo-2"
