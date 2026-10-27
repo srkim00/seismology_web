@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Interactive one-dimensional layered geothermal model with analytical and finite-volume solutions.">
+  <title>1D Layered Geothermal Modeler</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="app-header">
+      <div>
+        <p class="eyebrow">STEADY-STATE HEAT CONDUCTION</p>
+        <h1>1D Layered Geothermal Modeler</h1>
+        <p class="subtitle">Edit layer boundaries, radioactive heat generation, and thermal conductivity. The analytical and finite-volume geotherms update immediately.</p>
+      </div>
+      <div class="header-actions" aria-label="Model actions">
+        <button id="resetButton" class="button secondary" type="button">Reset example</button>
+        <button id="downloadCsvButton" class="button secondary" type="button">Download CSV</button>
+        <button id="downloadModelButton" class="button secondary" type="button">Save model</button>
+        <label class="button secondary file-button">Load model<input id="loadModelInput" type="file" accept="application/json,.json"></label>
+      </div>
+    </header>
+
+    <section class="control-strip" aria-label="Boundary conditions and discretization">
+      <label>Surface temperature, T<sub>s</sub> (°C)<input id="surfaceTemperatureInput" type="number" step="1" value="15"></label>
+      <label>Basal heat flow, q<sub>b</sub> (mW m⁻²)<input id="basalHeatFlowInput" type="number" step="1" min="0" value="25"></label>
+      <label>Total depth (km)<input id="totalDepthInput" type="number" step="1" min="1" max="100" value="40"></label>
+      <label>Numerical cells<input id="cellCountInput" type="number" step="50" min="50" max="2000" value="400"></label>
+      <label>Layer count<input id="layerCountInput" type="number" step="1" min="1" max="12" value="4"></label>
+    </section>
+
+    <section class="workspace" aria-label="Interactive geothermal model workspace">
+      <article class="panel model-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-kicker">INPUT MODEL</p>
+            <h2>Layer properties</h2>
+          </div>
+          <div class="legend compact" aria-label="Input legend">
+            <span><i class="swatch heat"></i>A</span>
+            <span><i class="swatch conductivity"></i>k</span>
+            <span><i class="swatch boundary"></i>Boundary</span>
+          </div>
+        </div>
+
+        <div class="chart-wrap">
+          <svg id="modelChart" class="chart" role="img" aria-label="Layered heat generation and conductivity editor"></svg>
+        </div>
+
+        <div class="editor-toolbar">
+          <button id="splitButton" class="button primary" type="button">Split selected layer</button>
+          <button id="mergeButton" class="button secondary" type="button">Merge selected layer</button>
+        </div>
+
+        <div class="layer-readout">
+          <div>
+            <span>Selected layer</span>
+            <strong id="selectedLayerLabel">Layer 1</strong>
+          </div>
+          <label>A (µW m⁻³)<input id="selectedAInput" type="number" min="0" max="8" step="0.05"></label>
+          <label>k (W m⁻¹ K⁻¹)<input id="selectedKInput" type="number" min="0.5" max="8" step="0.05"></label>
+        </div>
+
+        <p class="interaction-note"><strong>Mouse:</strong> drag orange or blue vertical handles to change A or k; drag horizontal handles to change interface depth. Click a layer to select it.</p>
+      </article>
+
+      <article class="panel result-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-kicker">MODEL RESPONSE</p>
+            <h2>Temperature–depth profile</h2>
+          </div>
+          <div class="result-heading-tools">
+            <button id="methodButton" class="button method-button" type="button" aria-haspopup="dialog">Equations &amp; numerical method</button>
+            <div class="legend compact" aria-label="Solution legend">
+              <span><i class="line-key analytical"></i>Analytical</span>
+              <span><i class="line-key numerical"></i>Finite volume</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="chart-wrap">
+          <svg id="geothermChart" class="chart" role="img" aria-label="Analytical and numerical temperature-depth profiles"></svg>
+        </div>
+
+        <div class="metrics" aria-label="Calculated model metrics">
+          <div><span>Surface heat flow</span><strong id="surfaceHeatFlowMetric">—</strong></div>
+          <div><span>Bottom temperature</span><strong id="bottomTemperatureMetric">—</strong></div>
+          <div><span>Maximum |ΔT|</span><strong id="solutionDifferenceMetric">—</strong></div>
+          <div><span>Thermal resistance</span><strong id="thermalResistanceMetric">—</strong></div>
+        </div>
+
+        <div class="method-note">
+          <strong>Boundary conditions</strong>
+          <span>T(0) = T<sub>s</sub>; k dT/dz at the model base = q<sub>b</sub>. Depth z is positive downward, and heat-flow values are reported as upward-positive magnitudes.</span>
+        </div>
+      </article>
+    </section>
+
+    <section class="table-panel panel">
+      <div class="panel-heading table-heading">
+        <div>
+          <p class="panel-kicker">NUMERICAL VALUES</p>
+          <h2>Layer model</h2>
+        </div>
+        <p>Edits in the table and plots are synchronized.</p>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr><th>Layer</th><th>Top (km)</th><th>Bottom (km)</th><th>Thickness (km)</th><th>A (µW m⁻³)</th><th>k (W m⁻¹ K⁻¹)</th><th>Top q (mW m⁻²)</th><th>Top T (°C)</th></tr>
+          </thead>
+          <tbody id="layerTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <dialog id="methodDialog" class="method-dialog" aria-labelledby="methodDialogTitle">
+      <div class="dialog-shell">
+        <header class="dialog-header">
+          <div>
+            <p class="panel-kicker">FORMULATION</p>
+            <h2 id="methodDialogTitle">Analytical and finite-volume solutions</h2>
+          </div>
+          <button id="methodDialogClose" class="dialog-close" type="button" aria-label="Close equations and numerical method">×</button>
+        </header>
+
+        <div class="dialog-body">
+          <p class="lead-note">The formulation is valid for an arbitrary number <em>n</em> of horizontal layers. Layer properties are piecewise constant, depth is positive downward, and heat flow is expressed as an upward-positive magnitude.</p>
+
+          <section class="method-section">
+            <h3>1. Layer notation and governing equation</h3>
+            <div class="notation-grid">
+              <div><strong>Interfaces</strong><span>0 = z<sub>0</sub> &lt; z<sub>1</sub> &lt; ··· &lt; z<sub>n</sub> = L</span></div>
+              <div><strong>Layer thickness</strong><span>h<sub>i</sub> = z<sub>i</sub> − z<sub>i−1</sub></span></div>
+              <div><strong>Layer properties</strong><span>A<sub>i</sub>, k<sub>i</sub>; i = 1, …, n</span></div>
+              <div><strong>Numerical cells</strong><span>M cells; Δz = L/M</span></div>
+            </div>
+            <div class="equation-card">
+              <math display="block" aria-label="Derivative with respect to depth of k times derivative of temperature with respect to depth, plus A, equals zero">
+                <mfrac><mi>d</mi><mrow><mi>d</mi><mi>z</mi></mrow></mfrac>
+                <mo>[</mo><mi>k</mi><mo>(</mo><mi>z</mi><mo>)</mo><mfrac><mrow><mi>d</mi><mi>T</mi></mrow><mrow><mi>d</mi><mi>z</mi></mrow></mfrac><mo>]</mo>
+                <mo>+</mo><mi>A</mi><mo>(</mo><mi>z</mi><mo>)</mo><mo>=</mo><mn>0</mn>
+              </math>
+              <span class="equation-number">(1)</span>
+            </div>
+            <div class="equation-card">
+              <math display="block" aria-label="q of z equals k of z times d T by d z">
+                <mi>q</mi><mo>(</mo><mi>z</mi><mo>)</mo><mo>=</mo><mi>k</mi><mo>(</mo><mi>z</mi><mo>)</mo>
+                <mfrac><mrow><mi>d</mi><mi>T</mi></mrow><mrow><mi>d</mi><mi>z</mi></mrow></mfrac>
+              </math>
+              <span class="equation-number">(2)</span>
+            </div>
+            <p>The boundary conditions are <span class="inline-equation">T(0) = T<sub>s</sub></span> and <span class="inline-equation">q(L) = q<sub>b</sub></span>. Temperature and heat flow remain continuous at every interface.</p>
+          </section>
+
+          <section class="method-section">
+            <h3>2. Exact piecewise solution for n layers</h3>
+            <p>The heat flow at the top of layer <em>i</em> includes the basal contribution and the heat produced in layer <em>i</em> and all deeper layers:</p>
+            <div class="equation-card">
+              <math display="block" aria-label="Top heat flow of layer i equals basal heat flow plus the sum from j equals i to n of A j h j">
+                <msubsup><mi>q</mi><mi>i</mi><mi>t</mi></msubsup><mo>=</mo><msub><mi>q</mi><mi>b</mi></msub><mo>+</mo>
+                <munderover><mo>∑</mo><mrow><mi>j</mi><mo>=</mo><mi>i</mi></mrow><mi>n</mi></munderover>
+                <msub><mi>A</mi><mi>j</mi></msub><msub><mi>h</mi><mi>j</mi></msub>
+              </math>
+              <span class="equation-number">(3)</span>
+            </div>
+            <p>Within layer <em>i</em>, define local depth <span class="inline-equation">ξ = z − z<sub>i−1</sub></span>, where <span class="inline-equation">0 ≤ ξ ≤ h<sub>i</sub></span>. The exact solution is</p>
+            <div class="equation-card equation-pair">
+              <math display="block" aria-label="q i of xi equals q i top minus A i xi">
+                <msub><mi>q</mi><mi>i</mi></msub><mo>(</mo><mi>ξ</mi><mo>)</mo><mo>=</mo><msubsup><mi>q</mi><mi>i</mi><mi>t</mi></msubsup><mo>−</mo><msub><mi>A</mi><mi>i</mi></msub><mi>ξ</mi>
+              </math>
+              <math display="block" aria-label="Temperature in layer i as a function of local depth">
+                <msub><mi>T</mi><mi>i</mi></msub><mo>(</mo><mi>ξ</mi><mo>)</mo><mo>=</mo><msubsup><mi>T</mi><mi>i</mi><mi>t</mi></msubsup><mo>+</mo>
+                <mfrac>
+                  <mrow><msubsup><mi>q</mi><mi>i</mi><mi>t</mi></msubsup><mi>ξ</mi><mo>−</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><msub><mi>A</mi><mi>i</mi></msub><msup><mi>ξ</mi><mn>2</mn></msup></mrow>
+                  <msub><mi>k</mi><mi>i</mi></msub>
+                </mfrac>
+              </math>
+              <span class="equation-number">(4)</span>
+            </div>
+            <p>The next layer starts from the values obtained at <span class="inline-equation">ξ = h<sub>i</sub></span>:</p>
+            <div class="equation-card equation-pair">
+              <math display="block" aria-label="Recursive heat flow relation between layer tops">
+                <msubsup><mi>q</mi><mrow><mi>i</mi><mo>+</mo><mn>1</mn></mrow><mi>t</mi></msubsup><mo>=</mo><msubsup><mi>q</mi><mi>i</mi><mi>t</mi></msubsup><mo>−</mo><msub><mi>A</mi><mi>i</mi></msub><msub><mi>h</mi><mi>i</mi></msub>
+              </math>
+              <math display="block" aria-label="Recursive temperature relation between layer tops">
+                <msubsup><mi>T</mi><mrow><mi>i</mi><mo>+</mo><mn>1</mn></mrow><mi>t</mi></msubsup><mo>=</mo><msubsup><mi>T</mi><mi>i</mi><mi>t</mi></msubsup><mo>+</mo>
+                <mfrac>
+                  <mrow><msubsup><mi>q</mi><mi>i</mi><mi>t</mi></msubsup><msub><mi>h</mi><mi>i</mi></msub><mo>−</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><msub><mi>A</mi><mi>i</mi></msub><msubsup><mi>h</mi><mi>i</mi><mn>2</mn></msubsup></mrow>
+                  <msub><mi>k</mi><mi>i</mi></msub>
+                </mfrac>
+              </math>
+              <span class="equation-number">(5)</span>
+            </div>
+          </section>
+
+          <section class="method-section">
+            <h3>3. Cell-centered finite-volume discretization</h3>
+            <p>The interval <span class="inline-equation">0 ≤ z ≤ L</span> is divided into <em>M</em> cells. Each cell center receives the A and k values of its containing geological layer. Conductivity at an internal cell face is the harmonic mean:</p>
+            <div class="equation-card">
+              <math display="block" aria-label="Harmonic mean conductivity and face conductance">
+                <msub><mi>k</mi><mrow><mi>p</mi><mo>+</mo><mfrac><mn>1</mn><mn>2</mn></mfrac></mrow></msub>
+                <mo>=</mo><mfrac><mrow><mn>2</mn><msub><mi>k</mi><mi>p</mi></msub><msub><mi>k</mi><mrow><mi>p</mi><mo>+</mo><mn>1</mn></mrow></msub></mrow><mrow><msub><mi>k</mi><mi>p</mi></msub><mo>+</mo><msub><mi>k</mi><mrow><mi>p</mi><mo>+</mo><mn>1</mn></mrow></msub></mrow></mfrac>
+                <mo>,</mo><mspace width="1em"/><msub><mi>G</mi><mrow><mi>p</mi><mo>+</mo><mfrac><mn>1</mn><mn>2</mn></mfrac></mrow></msub><mo>=</mo><mfrac><msub><mi>k</mi><mrow><mi>p</mi><mo>+</mo><mfrac><mn>1</mn><mn>2</mn></mfrac></mrow></msub><mrow><mi>Δ</mi><mi>z</mi></mrow></mfrac>
+              </math>
+              <span class="equation-number">(6)</span>
+            </div>
+            <p>For an interior cell <span class="inline-equation">p = 1, …, M−2</span>, flux balance gives</p>
+            <div class="equation-card wide-equation">
+              <math display="block" aria-label="Finite volume balance for an interior cell">
+                <mo>−</mo><msub><mi>G</mi><mrow><mi>p</mi><mo>−</mo><mfrac><mn>1</mn><mn>2</mn></mfrac></mrow></msub><msub><mi>T</mi><mrow><mi>p</mi><mo>−</mo><mn>1</mn></mrow></msub>
+                <mo>+</mo><mo>(</mo><msub><mi>G</mi><mrow><mi>p</mi><mo>−</mo><mfrac><mn>1</mn><mn>2</mn></mfrac></mrow></msub><mo>+</mo><msub><mi>G</mi><mrow><mi>p</mi><mo>+</mo><mfrac><mn>1</mn><mn>2</mn></mfrac></mrow></msub><mo>)</mo><msub><mi>T</mi><mi>p</mi></msub>
+                <mo>−</mo><msub><mi>G</mi><mrow><mi>p</mi><mo>+</mo><mfrac><mn>1</mn><mn>2</mn></mfrac></mrow></msub><msub><mi>T</mi><mrow><mi>p</mi><mo>+</mo><mn>1</mn></mrow></msub>
+                <mo>=</mo><msub><mi>A</mi><mi>p</mi></msub><mi>Δ</mi><mi>z</mi>
+              </math>
+              <span class="equation-number">(7)</span>
+            </div>
+            <p>The surface half-cell conductance is <span class="inline-equation">G<sub>s</sub> = 2k<sub>0</sub>/Δz</span>. The first and last rows of the matrix are</p>
+            <div class="equation-card equation-pair wide-equation">
+              <math display="block" aria-label="Finite volume equation at the surface cell">
+                <mo>(</mo><msub><mi>G</mi><mi>s</mi></msub><mo>+</mo><msub><mi>G</mi><mfrac><mn>1</mn><mn>2</mn></mfrac></msub><mo>)</mo><msub><mi>T</mi><mn>0</mn></msub>
+                <mo>−</mo><msub><mi>G</mi><mfrac><mn>1</mn><mn>2</mn></mfrac></msub><msub><mi>T</mi><mn>1</mn></msub>
+                <mo>=</mo><msub><mi>A</mi><mn>0</mn></msub><mi>Δ</mi><mi>z</mi><mo>+</mo><msub><mi>G</mi><mi>s</mi></msub><msub><mi>T</mi><mi>s</mi></msub>
+              </math>
+              <math display="block" aria-label="Finite volume equation at the basal cell">
+                <mo>−</mo><msub><mi>G</mi><mrow><mi>M</mi><mo>−</mo><mfrac><mn>3</mn><mn>2</mn></mfrac></mrow></msub><msub><mi>T</mi><mrow><mi>M</mi><mo>−</mo><mn>2</mn></mrow></msub>
+                <mo>+</mo><msub><mi>G</mi><mrow><mi>M</mi><mo>−</mo><mfrac><mn>3</mn><mn>2</mn></mfrac></mrow></msub><msub><mi>T</mi><mrow><mi>M</mi><mo>−</mo><mn>1</mn></mrow></msub>
+                <mo>=</mo><msub><mi>A</mi><mrow><mi>M</mi><mo>−</mo><mn>1</mn></mrow></msub><mi>Δ</mi><mi>z</mi><mo>+</mo><msub><mi>q</mi><mi>b</mi></msub>
+              </math>
+              <span class="equation-number">(8)</span>
+            </div>
+          </section>
+
+          <section class="method-section method-summary">
+            <h3>4. Calculation procedure</h3>
+            <ol>
+              <li>Validate and order the <em>n</em> layer interfaces, then convert km, µW m⁻³, and mW m⁻² to SI units.</li>
+              <li>Evaluate the exact piecewise solution by starting with q<sub>b</sub> and propagating heat flow and temperature through all layers.</li>
+              <li>Assign A and k to <em>M</em> finite-volume cells, construct the tridiagonal system from Equations (6)–(8), and solve it with the Thomas algorithm.</li>
+              <li>Interpolate the analytical solution at numerical cell depths and report max |T<sub>FV</sub> − T<sub>analytical</sub>|. Increase <em>M</em> to assess grid convergence.</li>
+            </ol>
+            <div class="complexity-note"><strong>Computational cost:</strong> the tridiagonal solve requires O(M) operations and O(M) storage. The analytical calculation requires O(n + P) operations, where P is the number of plotted sample points.</div>
+          </section>
+        </div>
+      </div>
+    </dialog>
+
+    <footer>
+      <p>Model equation: d/dz(k dT/dz) + A = 0. This tool represents one-dimensional, steady-state conduction; it does not include advection, transient cooling, phase changes, or temperature-dependent material properties.</p>
+    </footer>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

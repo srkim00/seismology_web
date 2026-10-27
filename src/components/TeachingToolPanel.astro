@@ -1,0 +1,138 @@
+---
+import { withBase } from "../lib/urls";
+
+interface Props {
+  id: string;
+  title: string;
+  description: string;
+  src: string;
+  height?: number;
+}
+
+const { id, title, description, src, height = 820 } = Astro.props;
+const toolUrl = withBase(src);
+---
+
+<details
+  id={id}
+  data-tool-panel={id}
+  class="teaching-tool-panel glass-panel glass-panel-heavy overflow-hidden rounded-2xl border"
+>
+  <summary
+    class="teaching-tool-summary flex cursor-pointer items-start justify-between gap-4 p-5 sm:p-6"
+    aria-labelledby={`${id}-title`}
+    aria-describedby={`${id}-description`}
+  >
+    <span class="min-w-0">
+      <span id={`${id}-title`} class="block font-serif text-xl text-ink sm:text-2xl">{title}</span>
+      <span id={`${id}-description`} class="mt-2 block max-w-3xl text-sm leading-relaxed text-muted">{description}</span>
+    </span>
+    <span class="tool-toggle-label mt-1 inline-flex shrink-0 items-center gap-2 text-sm font-medium text-primary-300" aria-hidden="true">
+      <span class="tool-label-open">Open</span>
+      <span class="tool-label-close">Close</span>
+      <svg class="tool-chevron h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6">
+        <path d="m5 7.5 5 5 5-5" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </span>
+  </summary>
+
+  <div class="border-t border-line">
+    <div class="flex justify-end border-b border-line px-5 py-3 sm:px-6">
+      <a
+        href={toolUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center rounded-md border border-line bg-surface px-3 py-2 text-sm font-semibold text-primary-300 transition-colors hover:border-primary-600 hover:bg-elevated hover:text-primary-200"
+      >
+        Open full screen
+        <span class="sr-only">: {title}</span>
+      </a>
+    </div>
+    <iframe
+      data-tool-frame={id}
+      data-tool-src={toolUrl}
+      title={title}
+      loading="lazy"
+      class="teaching-tool-frame block w-full border-0"
+      style={{ height: `${height}px` }}
+    ></iframe>
+  </div>
+</details>
+
+<script>
+  document.querySelectorAll<HTMLDetailsElement>("details[data-tool-panel]").forEach((panel) => {
+    if (panel.dataset.toolBound === "true") return;
+    panel.dataset.toolBound = "true";
+
+    const frame = panel.querySelector<HTMLIFrameElement>("iframe[data-tool-src]");
+    const loadOnFirstOpen = () => {
+      if (!panel.open || !frame || frame.hasAttribute("src")) return;
+      const source = frame.dataset.toolSrc;
+      if (source) frame.src = source;
+    };
+
+    // Retain the loaded document when closed so reopening preserves edits.
+    panel.addEventListener("toggle", loadOnFirstOpen);
+    loadOnFirstOpen();
+  });
+</script>
+
+<style>
+  .teaching-tool-summary {
+    list-style: none;
+  }
+
+  .teaching-tool-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .teaching-tool-summary::marker {
+    content: "";
+  }
+
+  .teaching-tool-summary:focus-visible {
+    outline: 2px solid #7dc4d6;
+    outline-offset: -4px;
+  }
+
+  .teaching-tool-summary > span:first-child {
+    overflow-wrap: anywhere;
+  }
+
+  .tool-label-close {
+    display: none;
+  }
+
+  .tool-chevron {
+    transition: transform 160ms ease;
+  }
+
+  .teaching-tool-panel[open] > .teaching-tool-summary .tool-label-open {
+    display: none;
+  }
+
+  .teaching-tool-panel[open] > .teaching-tool-summary .tool-label-close {
+    display: inline;
+  }
+
+  .teaching-tool-panel[open] > .teaching-tool-summary .tool-chevron {
+    transform: rotate(180deg);
+  }
+
+  @media (max-width: 479px) {
+    .teaching-tool-summary {
+      gap: 0.75rem;
+    }
+
+    .tool-toggle-label {
+      gap: 0.25rem;
+      font-size: 0.75rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tool-chevron {
+      transition: none;
+    }
+  }
+</style>

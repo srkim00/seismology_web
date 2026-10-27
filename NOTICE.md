@@ -18,6 +18,12 @@ The Research page also displays the existing representative figures and brief no
 
 The public people dataset contains 22 laboratory profiles, including 7 profiles with verified ORCID identifiers. Names, publication aliases, and identifiers are connected only when supported by explicit evidence. Similar names are not assumed to represent the same person. The non-laboratory mathematics faculty member named Donghun Lee is not included as a laboratory profile, and his publication author name is not assigned to KIGAM-affiliated Dong Hun Lee. Internal identifier-review status, dates, notes, and evidence sources are retained in the content records but are not rendered on public people pages. Publication author markers do not distinguish current from former members; a profile without a photograph is shown with initials only.
 
+## Courses and interactive teaching
+
+The Geophysics course page is adapted from the syllabus supplied by the instructor. It is an English, semester-independent overview rather than a republication of the dated PDF. The original course calendar, meeting locations and times, recording exceptions, and fixed office hours are omitted. Current-offering instructions remain with the course LMS.
+
+The 1D Layered Geothermal Modeler was supplied by the user as `Geothermal_Modeling_1D_Pro_Whole_Package.zip`. The files `public/tools/geothermal-1d/index.html`, `style.css`, and `app.js` are unchanged copies of the corresponding source files. The site embeds this tool after the existing gravity application using collapsible panels. Its scope is steady-state one-dimensional conduction with piecewise constant heat generation and conductivity; it does not model transient heat transfer or groundwater advection. The supplied code and teaching content are not automatically relicensed under the template's MIT License. Rights remain with their respective authors.
+
 ## Additional member photographs
 
 The following portraits were obtained from public person-level pages on 16 October 2026 after matching the person's academic history or institutional affiliation to the laboratory record. Original files are retained locally and displayed with the site's existing image sizing and circular framing. Exact source-image URLs and check dates are retained in each profile's internal `headshotSource` field.

@@ -1,6 +1,7 @@
 import { defineCollection } from "astro:content";
 import { glob } from "astro/loaders";
 import { z } from "zod";
+import { TEACHING_TOOL_IDS } from "./data/teaching";
 
 const DOI_PATTERN = /^10\.\d{4,9}\/\S+$/i;
 const ORCID_PATTERN = /^https:\/\/orcid\.org\/\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/;
@@ -250,4 +251,20 @@ const publications = defineCollection({
   schema: publicationSchema,
 });
 
-export const collections = { people, publications };
+// Evergreen course pages. Add one Markdown record to extend the Classes index.
+const courses = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./src/content/courses" }),
+  schema: z.object({
+    title: z.string().min(1),
+    code: z.string().min(1),
+    level: z.string().min(1),
+    summary: z.string().min(1),
+    instructor: z.string().min(1),
+    instructorSlug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/).optional(),
+    topics: z.array(z.string().min(1)).min(1),
+    tools: z.array(z.enum(TEACHING_TOOL_IDS)).default([]),
+    order: z.number().default(0),
+  }),
+});
+
+export const collections = { people, publications, courses };

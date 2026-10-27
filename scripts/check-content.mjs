@@ -282,6 +282,29 @@ for (const { name, text } of publications) {
 }
 
 assert(existsSync(join(root, "public/tools/gravity-forward/index.html")), "Gravity tool is missing");
+const courseFiles = markdownFiles("src/content/courses");
+assert(courseFiles.length > 0, "No courses were found");
+const teachingIds = JSON.parse(read("src/data/teaching.ts").match(/TEACHING_TOOL_IDS\s*=\s*(\[[^;]+?\])\s+as const/)?.[1] ?? "[]");
+assert(teachingIds.length > 0, "Teaching tool catalog is empty");
+for (const id of teachingIds) {
+  assert(/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(id), `Invalid teaching tool ID: ${id}`);
+  assert(existsSync(join(root, `public/tools/${id}/index.html`)), `Missing teaching tool: ${id}`);
+}
+for (const file of courseFiles) {
+  const text = read(`src/content/courses/${file}`);
+  assert(/^[a-z0-9]+(?:-[a-z0-9]+)*\.md$/.test(file), `Invalid course slug: ${file}`);
+  for (const field of ["title", "code", "level", "summary", "instructor"]) assert(scalar(text, field), `${file}: missing ${field}`);
+  const topics = jsonValue(text, "topics");
+  const tools = jsonValue(text, "tools");
+  assert(Array.isArray(topics) && topics.length > 0, `${file}: topics must be nonempty`);
+  assert(Array.isArray(tools) && tools.every((id) => teachingIds.includes(id)), `${file}: unknown teaching tool`);
+  assert(new Set(tools).size === tools.length, `${file}: duplicate tool IDs`);
+  const instructor = scalar(text, "instructorSlug");
+  if (instructor) assert(peopleFiles.includes(`${instructor}.md`), `${file}: instructor profile is missing`);
+}
+for (const file of ["index.html", "style.css", "app.js"]) {
+  assert(existsSync(join(root, `public/tools/geothermal-1d/${file}`)), `Missing geothermal runtime file: ${file}`);
+}
 for (const route of ["photos", "figures", "lab-life"]) {
   assert(!existsSync(join(root, `src/pages/${route}.astro`)), `Hidden or excluded route is present: ${route}`);
   if (existsSync(join(root, "dist"))) {
@@ -304,5 +327,5 @@ console.log(
     `${authorProvidedLocalFigures} author-provided), ${inPreparation.length} in preparation; ` +
     `${peopleFiles.length} people (${current.length} current, ${alumni.length} alumni, ` +
     `${formerResearchers.length} former researchers, ${aliases.size} reviewed author aliases), ` +
-    `${headshots.length} headshots; excluded routes absent.`,
+    `${headshots.length} headshots; ${courseFiles.length} courses, ${teachingIds.length} teaching tools; excluded routes absent.`,
 );

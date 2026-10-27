@@ -10,7 +10,8 @@ This site retains the structure and components of the MIT-licensed [`bchcohenlab
 - People: 13 current members, 5 alumni, and 4 former researchers, with profile pages, current affiliations for former members where publicly confirmed, and a downloadable PI CV
 - Research: publications grouped by research area
 - Publications: 43 published papers numbered No. 1–No. 43, with search, filters, and an in-page citation-copy dialog, plus 2 unnumbered work-in-preparation records in a separate bottom section linked from the top of the page
-- Tools & Teaching: 3D Gravity Forward Modeller
+- Classes: reusable English Geophysics course page, with expandable gravity and geothermal modelling tools; additional courses are generated from Markdown records
+- Tools & Teaching: the existing `/tools/` address retains both tools, in gravity-then-geothermal order
 - Contact: public address and external profiles
 
 ## Migrated data
@@ -51,6 +52,14 @@ The shared astronomical background uses opaque, normally composited images order
 ## Research layout
 
 The Research page presents each paper with its representative figure and existing brief note on the left, and bibliographic details, author markers, area tags, DOI, and citation control on the right. The left column occupies 55 percent of the available column width, with larger brief text and smaller bibliographic typography. On narrow screens the figure and note precede the bibliographic information. Figure frames use half of the corresponding Featured research frame height (22, 28, or 34rem divided by two), without cropping or filtering scientific images. Source attribution and reuse notices remain below local figures; linked-only figures retain publisher links. The redundant `Figure and brief note` link is omitted only in this Research layout. Publications and personal profiles retain their standard lists.
+
+## Classes and interactive teaching tools
+
+The primary navigation links to `/classes/`. Add a Markdown file under `src/content/courses/` to create another course card and `/classes/<slug>/` page automatically. Course records contain `title`, `code`, `level`, `summary`, `instructor`, optional `instructorSlug`, `topics`, `tools`, and `order`; the Markdown body contains the course description and policies. The `courses` collection validates these records. No unprovided courses or placeholder offerings are published.
+
+The Geophysics page (`/classes/geophysics/`, EAES204) is adapted from the instructor-supplied syllabus. It retains the course scope, preparation, topic sequence, references, and assessment approach, but omits semester dates, meeting times, room numbers, fixed office hours, recording exceptions, and calendar-specific quiz/absence counts. Current-offering arrangements are referred to the LMS. The original dated syllabus PDF is not published.
+
+`src/data/teaching.ts` is the shared tool catalog. Course records select catalog IDs, while `/tools/` displays the complete catalog in its defined order. Both pages use `TeachingToolPanel.astro`: native independent details/summary panels, collapsed initially; the iframe loads only on first expansion and is retained on collapse to preserve edits. Each panel also links to a full-screen version. The gravity application is unchanged. The geothermal runtime consists of the supplied, unchanged `index.html`, `style.css`, and `app.js` in `public/tools/geothermal-1d/`; the original ZIP, build script, and Google Sites packaging files are not published. No new server-side calculation or external dependency is introduced.
 
 ## Citation copying
 
