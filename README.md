@@ -61,6 +61,8 @@ The Geophysics page (`/classes/geophysics/`, EAES204) is adapted from the instru
 
 `src/data/teaching.ts` is the shared tool catalog. Course records select catalog IDs, while `/tools/` displays the complete catalog in its defined order. Both pages use `TeachingToolPanel.astro`: native independent details/summary panels, collapsed initially; the iframe loads only on first expansion and is retained on collapse to preserve edits. Each panel also links to a full-screen version. The gravity application is unchanged. The geothermal runtime consists of the supplied, unchanged `index.html`, `style.css`, and `app.js` in `public/tools/geothermal-1d/`; the original ZIP, build script, and Google Sites packaging files are not published. No new server-side calculation or external dependency is introduced.
 
+Three geoelectricity labs follow the gravity and geothermal tools: **Four-Electrode Resistivity** connects voltage and electrode geometry to apparent resistivity; **Two-Layer Resistivity Sounding** explores layer contrast and thickness; **Electromagnetic Skin Depth** compares attenuation across frequencies and ground resistivities. Their seven runtime files are in `public/classes/geophysics/geoelectricity-labs/`, with an `index.html` landing page. They use the same expandable panels and full-screen links.
+
 ## Citation copying
 
 Each published paper provides a **Cite** control in the Publications list, Research, Featured recent research, and the publication detail page. The control opens one modal dialog within the current page; it does not open a new window. Seven output forms are available:

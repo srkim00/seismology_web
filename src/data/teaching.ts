@@ -1,6 +1,12 @@
 // Shared tool catalog. Courses select tools by ID; the legacy /tools page
 // uses the same records and order. Source applications remain independent.
-export const TEACHING_TOOL_IDS = ["gravity-forward", "geothermal-1d"] as const;
+export const TEACHING_TOOL_IDS = [
+  "gravity-forward",
+  "geothermal-1d",
+  "geoelectricity-electrodes",
+  "geoelectricity-sounding",
+  "geoelectricity-skin-depth"
+] as const;
 export type TeachingToolId = (typeof TEACHING_TOOL_IDS)[number];
 
 export interface TeachingTool {
@@ -25,5 +31,26 @@ export const teachingTools: Record<TeachingToolId, TeachingTool> = {
     description: "Edit layer depths, heat generation, and thermal conductivity; compare analytical and finite-volume solutions for steady-state vertical heat conduction.",
     src: "/tools/geothermal-1d/",
     height: 1040,
+  },
+  "geoelectricity-electrodes": {
+    id: "geoelectricity-electrodes",
+    title: "Four-Electrode Resistivity",
+    description: "Change electrode spacing, current, and ground resistivity to connect measured voltage with apparent resistivity.",
+    src: "/classes/geophysics/geoelectricity-labs/electrodes.html",
+    height: 1100,
+  },
+  "geoelectricity-sounding": {
+    id: "geoelectricity-sounding",
+    title: "Two-Layer Resistivity Sounding",
+    description: "Change layer resistivities and thickness to see how a two-layer Earth shapes the Wenner sounding curve.",
+    src: "/classes/geophysics/geoelectricity-labs/sounding.html",
+    height: 1100,
+  },
+  "geoelectricity-skin-depth": {
+    id: "geoelectricity-skin-depth",
+    title: "Electromagnetic Skin Depth",
+    description: "Compare how frequency and ground resistivity control electromagnetic field attenuation with depth.",
+    src: "/classes/geophysics/geoelectricity-labs/skin-depth.html",
+    height: 1100,
   },
 };

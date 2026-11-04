@@ -6,7 +6,7 @@ summary: "Gravity, heat, geoelectricity, and geomagnetism as tools for understan
 instructor: "Seongryong Kim"
 instructorSlug: "seongryong-kim"
 topics: ["Earth and plate tectonics", "Gravity", "Heat", "Geoelectricity and geomagnetism"]
-tools: ["gravity-forward", "geothermal-1d"]
+tools: ["gravity-forward", "geothermal-1d", "geoelectricity-electrodes", "geoelectricity-sounding", "geoelectricity-skin-depth"]
 order: 1
 ---
 

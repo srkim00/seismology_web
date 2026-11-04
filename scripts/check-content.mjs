@@ -1,5 +1,5 @@
-import { existsSync, readFileSync, readdirSync } from "node:fs";
-import { dirname, join, normalize } from "node:path";
+import { existsSync, readFileSync, readdirSync, realpathSync, statSync } from "node:fs";
+import { dirname, join, normalize, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -284,11 +284,39 @@ for (const { name, text } of publications) {
 assert(existsSync(join(root, "public/tools/gravity-forward/index.html")), "Gravity tool is missing");
 const courseFiles = markdownFiles("src/content/courses");
 assert(courseFiles.length > 0, "No courses were found");
-const teachingIds = JSON.parse(read("src/data/teaching.ts").match(/TEACHING_TOOL_IDS\s*=\s*(\[[^;]+?\])\s+as const/)?.[1] ?? "[]");
+const teachingSource = read("src/data/teaching.ts");
+const teachingIds = JSON.parse(teachingSource.match(/TEACHING_TOOL_IDS\s*=\s*(\[[^;]+?\])\s+as const/)?.[1] ?? "[]");
 assert(teachingIds.length > 0, "Teaching tool catalog is empty");
+assert(new Set(teachingIds).size === teachingIds.length, "Teaching tool IDs are not unique");
+const teachingRecords = new Map(
+  [...teachingSource.matchAll(/^  "([a-z0-9-]+)":\s*\{([\s\S]*?)^  \},/gm)]
+    .map((match) => [match[1], match[2]]),
+);
+const publicRoot = realpathSync(join(root, "public"));
 for (const id of teachingIds) {
   assert(/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(id), `Invalid teaching tool ID: ${id}`);
-  assert(existsSync(join(root, `public/tools/${id}/index.html`)), `Missing teaching tool: ${id}`);
+  const record = teachingRecords.get(id);
+  const sourceMatch = record?.match(/^\s*src:\s*("(?:\\.|[^"\\])*")\s*,?\s*$/m);
+  assert(sourceMatch, `Missing teaching tool source: ${id}`);
+  const src = JSON.parse(sourceMatch[1]);
+  assert(/^\/(?!\/)/.test(src) && !/[\\?#\u0000-\u001f\u007f]/.test(src), `Teaching tool source must be a safe root-relative path: ${id}`);
+  let pathname;
+  try {
+    pathname = decodeURIComponent(src);
+  } catch {
+    throw new Error(`Invalid teaching tool source encoding: ${id}`);
+  }
+  assert(
+    /^\/(?!\/)/.test(pathname)
+      && !/[\\?#\u0000-\u001f\u007f]/.test(pathname)
+      && !pathname.split("/").some((part) => part === "." || part === ".."),
+    `Unsafe teaching tool source path: ${id}`,
+  );
+  const relativePath = pathname.endsWith("/") ? `${pathname}index.html` : pathname;
+  const toolPath = resolve(publicRoot, relativePath.slice(1));
+  assert(toolPath.startsWith(`${publicRoot}${sep}`), `Teaching tool source is outside public: ${id}`);
+  assert(existsSync(toolPath) && statSync(toolPath).isFile(), `Missing teaching tool: ${id} (${src})`);
+  assert(realpathSync(toolPath).startsWith(`${publicRoot}${sep}`), `Teaching tool source resolves outside public: ${id}`);
 }
 for (const file of courseFiles) {
   const text = read(`src/content/courses/${file}`);
