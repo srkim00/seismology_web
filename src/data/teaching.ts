@@ -3,6 +3,7 @@
 export const TEACHING_TOOL_IDS = [
   "gravity-forward",
   "geothermal-1d",
+  "mantle-potential-temperature",
   "geoelectricity-electrodes",
   "geoelectricity-sounding",
   "geoelectricity-skin-depth"
@@ -31,6 +32,13 @@ export const teachingTools: Record<TeachingToolId, TeachingTool> = {
     description: "Edit layer depths, heat generation, and thermal conductivity; compare analytical and finite-volume solutions for steady-state vertical heat conduction.",
     src: "/tools/geothermal-1d/",
     height: 1040,
+  },
+  "mantle-potential-temperature": {
+    id: "mantle-potential-temperature",
+    title: "Mantle Potential Temperature Forward Modeler",
+    description: "Compare tectonic settings by varying mantle potential temperature, lithosphere thickness, water, and composition; model geotherms, solidus crossings, density, and first-order P- and S-wave velocity responses.",
+    src: "/tools/mantle-potential-temperature/",
+    height: 1240,
   },
   "geoelectricity-electrodes": {
     id: "geoelectricity-electrodes",
