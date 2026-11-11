@@ -4,9 +4,7 @@ export const TEACHING_TOOL_IDS = [
   "gravity-forward",
   "geothermal-1d",
   "mantle-potential-temperature",
-  "geoelectricity-electrodes",
-  "geoelectricity-sounding",
-  "geoelectricity-skin-depth"
+  "geoelectricity-labs"
 ] as const;
 export type TeachingToolId = (typeof TEACHING_TOOL_IDS)[number];
 
@@ -40,25 +38,11 @@ export const teachingTools: Record<TeachingToolId, TeachingTool> = {
     src: "/tools/mantle-potential-temperature/",
     height: 1240,
   },
-  "geoelectricity-electrodes": {
-    id: "geoelectricity-electrodes",
-    title: "Four-Electrode Resistivity",
-    description: "Change electrode spacing, current, and ground resistivity to connect measured voltage with apparent resistivity.",
-    src: "/classes/geophysics/geoelectricity-labs/electrodes.html",
-    height: 1100,
-  },
-  "geoelectricity-sounding": {
-    id: "geoelectricity-sounding",
-    title: "Two-Layer Resistivity Sounding",
-    description: "Change layer resistivities and thickness to see how a two-layer Earth shapes the Wenner sounding curve.",
-    src: "/classes/geophysics/geoelectricity-labs/sounding.html",
-    height: 1100,
-  },
-  "geoelectricity-skin-depth": {
-    id: "geoelectricity-skin-depth",
-    title: "Electromagnetic Skin Depth",
-    description: "Compare how frequency and ground resistivity control electromagnetic field attenuation with depth.",
-    src: "/classes/geophysics/geoelectricity-labs/skin-depth.html",
+  "geoelectricity-labs": {
+    id: "geoelectricity-labs",
+    title: "Geoelectricity Laboratories",
+    description: "Eight experiments on material ambiguity, SP acquisition, DC sounding, IP time windows, ERT sensitivity, FDEM coupling, TDEM decay, and MT static shift.",
+    src: "/classes/geophysics/geoelectricity-labs/",
     height: 1100,
   },
 };
